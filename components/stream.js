@@ -6,8 +6,13 @@ import { useAuth } from "../hooks/useAuth";
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Stream(props) {
-    const user = localStorage.getItem("user");
-    const { data, error } = useSwr(`/api/stream/${user.uid}/token`, fetcher);
+    const auth = useAuth();
+    if (!auth.user) return <div>Loading...</div>;
+
+    const { data, error } = useSwr(
+        `/api/stream/${auth.user.uid}/token`,
+        fetcher
+    );
 
     if (error) return <div>Failed to load user</div>;
     if (!data) return <div>Loading...</div>;
