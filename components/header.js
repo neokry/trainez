@@ -33,7 +33,7 @@ function Header() {
                     </a>
                 </Link>
 
-                <Link href="/">
+                <Link href="/my/chats">
                     <a className="block text-white">
                         <FontAwesomeIcon icon={faCommentDots} />
                     </a>
