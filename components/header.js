@@ -39,7 +39,7 @@ function Header() {
                     </a>
                 </Link>
 
-                <Link href="/">
+                <Link href="/my/settings/profile">
                     <a className="block text-white">
                         <FontAwesomeIcon icon={faUserCircle} />
                     </a>

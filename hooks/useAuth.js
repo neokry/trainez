@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { projectAuth } from "../configs/firebase";
+import { useStream } from "./useStream";
 
 const authContext = createContext();
 
@@ -14,6 +15,7 @@ export const useAuth = () => {
 
 function useProvideAuth() {
     const [user, setUser] = useState(null);
+    const stream = useStream();
 
     const signin = (email, password) => {
         projectAuth
@@ -25,10 +27,13 @@ function useProvideAuth() {
                 setUser(e.user);
                 localStorage.setItem("user", e.user);
                 return e.user;
+            })
+            .then((usr) => {
+                stream.getStreamToken(usr.uid);
             });
     };
 
-    const signup = (email, password) => {
+    const signup = (email, password, name) => {
         projectAuth
             .createUserWithEmailAndPassword(email, password)
             .catch((err) => {
@@ -38,6 +43,9 @@ function useProvideAuth() {
                 setUser(e.user);
                 localStorage.setItem("user", e.user);
                 return e.user;
+            })
+            .then((usr) => {
+                stream.getStreamToken(usr.uid);
             });
     };
 
@@ -50,17 +58,20 @@ function useProvideAuth() {
             .then((e) => {
                 setUser(false);
                 localStorage.removeItem("user");
+                localStorage.removeItem("stream");
             });
     };
 
     useEffect(() => {
-        const unsub = projectAuth.onAuthStateChanged((user) => {
-            if (user) {
-                setUser(user);
-                localStorage.setItem("user", user);
+        const unsub = projectAuth.onAuthStateChanged((usr) => {
+            if (usr) {
+                setUser(usr);
+                localStorage.setItem("user", usr);
+                stream.getStreamToken(usr.id);
             } else {
                 setUser(false);
                 localStorage.removeItem("user");
+                localStorage.removeItem("stream");
             }
         });
 
