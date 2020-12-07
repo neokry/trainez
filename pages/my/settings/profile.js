@@ -6,23 +6,22 @@ import { connect } from "getstream";
 import { useStream } from "../../../hooks/useStream";
 
 export default function Profile() {
-    const [stream, setStream] = useState(false);
+    const stream = useStream();
+    stream.getUser();
+
+    const [userName, setUserName] = useState("");
+    const [displayName, setDisplayName] = useState("");
+    const [bio, setBio] = useState("");
+    const [url, setUrl] = useState("");
+
     useEffect(() => {
-        setStream(localStorage.getItem("stream"));
-    });
-
-    if (!stream) return <div>Loading..</div>;
-
-    const client = connect("et996ub2qf5f", stream, "102445");
-
-    client.currentUser
-        .get()
-        .catch((err) => {
-            console.log("Error getting user");
-        })
-        .then((user) => {
-            console.log(user);
-        });
+        const user = stream.user.data;
+        console.log(user);
+        if (user?.userName) setUserName(user.userName);
+        if (user?.name) setDisplayName(user.name);
+        if (user?.bio) setBio(user.bio);
+        if (user?.url) setUrl(user.url);
+    }, stream.user.data);
 
     const handleClick = (e) => {
         e.preventDefault();
@@ -30,10 +29,13 @@ export default function Profile() {
     };
 
     const handleSubmit = (e) => {
-        client.currentUser.update({
-            name: "Patrick",
-        });
         e.preventDefault();
+        stream.updateUser({
+            userName: userName,
+            name: displayName,
+            bio: bio,
+            url: url,
+        });
     };
 
     return (
@@ -65,6 +67,8 @@ export default function Profile() {
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Username"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -73,6 +77,8 @@ export default function Profile() {
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Username"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -80,7 +86,9 @@ export default function Profile() {
                     <input
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="Username"
+                        placeholder="Bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -88,7 +96,9 @@ export default function Profile() {
                     <input
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="Username"
+                        placeholder="Website URL"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
                     ></input>
                 </div>
                 <button

@@ -9,7 +9,7 @@ export default function Stream(props) {
     const [stream, setStream] = useState(false);
     useEffect(() => {
         setStream(localStorage.getItem("stream"));
-    });
+    }, []);
 
     if (!stream) return <div>Loading..</div>;
 
