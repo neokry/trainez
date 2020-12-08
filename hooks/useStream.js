@@ -39,13 +39,26 @@ export function useStream() {
             });
     };
 
-    const updateUser = (data) => {
-        client.currentUser?.update(data).catch((err) => {
-            console.log("Error setting user " + err);
-        });
+    const updateUser = async (data) => {
+        try {
+            if (data.profileImageFile?.length > 0) {
+                const result = await client.images.upload(
+                    data.profileImageFile[0]
+                );
+                data.profileImage = result.file;
+            }
+            const upload = {
+                userName: data.userName,
+                name: data.name,
+                bio: data.bio,
+                url: data.url,
+                profileImage: data.profileImage,
+            };
+            await client.currentUser?.update(upload);
+        } catch (err) {
+            console.log("Error updating user " + err);
+        }
     };
-
-    const uploadProfilePicture = (file) => {};
 
     return { getStreamToken, updateUser, getUser, user };
 }

@@ -2,40 +2,40 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../../components/layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
-import { connect } from "getstream";
 import { useStream } from "../../../hooks/useStream";
+import { useForm } from "react-hook-form";
 
 export default function Profile() {
     const stream = useStream();
-    stream.getUser();
+    const { register, handleSubmit, reset, getValues, setValue } = useForm();
+    const [profileImg, setProfileImg] = useState(false);
 
-    const [userName, setUserName] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [bio, setBio] = useState("");
-    const [url, setUrl] = useState("");
+    stream.getUser();
 
     useEffect(() => {
         const user = stream.user.data;
-        console.log(user);
-        if (user?.userName) setUserName(user.userName);
-        if (user?.name) setDisplayName(user.name);
-        if (user?.bio) setBio(user.bio);
-        if (user?.url) setUrl(user.url);
+        reset(user);
+        if (user?.profileImage) setProfileImg(user.profileImage);
     }, stream.user.data);
 
-    const handleClick = (e) => {
+    const onClick = (e) => {
         e.preventDefault();
         auth.signout();
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        stream.updateUser({
-            userName: userName,
-            name: displayName,
-            bio: bio,
-            url: url,
-        });
+    const onSubmit = (data) => {
+        console.log(data);
+        stream.updateUser(data);
+    };
+
+    const imgPreview = (e) => {
+        const { profileImageFile } = getValues();
+        var file = profileImageFile[0];
+        var reader = new FileReader();
+        reader.onloadend = () => {
+            setProfileImg(reader.result);
+        };
+        reader.readAsDataURL(file);
     };
 
     return (
@@ -46,20 +46,32 @@ export default function Profile() {
                 </h1>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <label className="border-2 rounded-full w-20 h-20 flex justify-around items-center mt-4 bg-gray-400">
                     <input
                         type="file"
                         className="invisible z-30 absolute"
                         id="myFile"
+                        ref={register}
+                        onChange={imgPreview}
+                        name="profileImageFile"
                     />
                     <FontAwesomeIcon
                         icon={faCamera}
                         className="text-white z-20 absolute"
                     ></FontAwesomeIcon>
-                    <p className="text-4xl font-bold text-green-400 z-10 absolute">
-                        PG
-                    </p>
+                    {profileImg ? (
+                        <img
+                            src={profileImg}
+                            name="profileImage"
+                            alt="profile image"
+                            className="rounded-full"
+                        />
+                    ) : (
+                        <p className="text-4xl font-bold text-green-400 z-10 absolute">
+                            PG
+                        </p>
+                    )}
                 </label>
                 <div className="mt-4">
                     <p>Username</p>
@@ -67,8 +79,8 @@ export default function Profile() {
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Username"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
+                        name="userName"
+                        ref={register}
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -76,9 +88,9 @@ export default function Profile() {
                     <input
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="Username"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="DisplayName"
+                        ref={register}
+                        name="name"
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -87,8 +99,8 @@ export default function Profile() {
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Bio"
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
+                        ref={register}
+                        name="bio"
                     ></input>
                 </div>
                 <div className="mt-4">
@@ -97,8 +109,8 @@ export default function Profile() {
                         type="text"
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Website URL"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
+                        ref={register}
+                        name="url"
                     ></input>
                 </div>
                 <button
@@ -109,7 +121,7 @@ export default function Profile() {
                 </button>
             </form>
 
-            <button onClick={handleClick}>Sign Out</button>
+            <button onClick={onClick}>Sign Out</button>
         </Layout>
     );
 }
