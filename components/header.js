@@ -9,11 +9,9 @@ import {
     faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
 
-function Header() {
-    const [isExpanded, toggleExpansion] = useState(false);
-
+function Header({ menuClick }) {
     return (
-        <header className="bg-green-400 fixed w-full z-10 text-2xl">
+        <header className="bg-green-400 fixed w-full z-20 text-2xl">
             <div className="flex flex-wrap items-center justify-between max-w-6xl p-2 mx-auto md:flex-no-wrap">
                 <Link href="/">
                     <a className="block text-white">
@@ -39,11 +37,9 @@ function Header() {
                     </a>
                 </Link>
 
-                <Link href="/pgenevich">
-                    <a className="block text-white">
-                        <FontAwesomeIcon icon={faUserCircle} />
-                    </a>
-                </Link>
+                <button className="block text-white" onClick={menuClick}>
+                    <FontAwesomeIcon icon={faUserCircle} />
+                </button>
             </div>
         </header>
     );

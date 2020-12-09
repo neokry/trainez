@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { projectAuth } from "../configs/firebase";
 import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
+import { useRouter } from "next/router";
 
 const authContext = createContext();
 
@@ -18,6 +19,7 @@ function useProvideAuth() {
     const [user, setUser] = useState(null);
     const stream = useStream();
     const fire = useFirebase();
+    const router = useRouter();
 
     const signin = (email, password) => {
         projectAuth
@@ -62,6 +64,7 @@ function useProvideAuth() {
                 setUser(false);
                 localStorage.removeItem("user");
                 localStorage.removeItem("stream");
+                router.push("/");
             });
     };
 

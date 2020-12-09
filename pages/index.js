@@ -8,10 +8,9 @@ function IndexPage() {
     const auth = useAuth();
 
     useEffect(() => {
-        if (localStorage.getItem("user") || auth.user) {
-            setLogin(true);
-        }
-    });
+        if (localStorage.getItem("user") || auth.user) setLogin(true);
+        else setLogin(false);
+    }, [auth.user]);
 
     if (login) {
         return <MainFeed />;

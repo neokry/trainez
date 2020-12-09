@@ -3,7 +3,7 @@ import { FlatFeed, LikeButton, Activity } from "react-activity-feed";
 import Layout from "../components/layout";
 import { useState } from "react";
 
-export default function MainPage() {
+export default function MainFeed() {
     const [showComments, setShowComments] = useState(false);
 
     function handleCommentsClick(e) {

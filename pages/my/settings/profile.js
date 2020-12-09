@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../components/layout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { useStream } from "../../../hooks/useStream";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../hooks/useAuth";
@@ -49,7 +47,7 @@ export default function Profile() {
                 </h1>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="md:w-1/2">
                 <label className="border-2 rounded-full w-20 h-20 flex justify-around items-center mt-4 bg-gray-400">
                     <input
                         type="file"
@@ -59,10 +57,12 @@ export default function Profile() {
                         onChange={imgPreview}
                         name="profileImageFile"
                     />
-                    <FontAwesomeIcon
-                        icon={faCamera}
-                        className="text-white z-20 absolute"
-                    ></FontAwesomeIcon>
+
+                    <img
+                        src="/camera.png"
+                        className="text-white w-5 h-5 z-20 absolute"
+                    ></img>
+
                     {profileImg ? (
                         <img
                             src={profileImg}
@@ -98,13 +98,13 @@ export default function Profile() {
                 </div>
                 <div className="mt-4">
                     <p>Bio</p>
-                    <input
-                        type="text"
-                        className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                    <textarea
+                        className="border-gray-400 border-2 rounded-md w-full h-20 p-2"
                         placeholder="Bio"
                         ref={register}
+                        rows="2"
                         name="bio"
-                    ></input>
+                    />
                 </div>
                 <div className="mt-4">
                     <p>Website URL</p>

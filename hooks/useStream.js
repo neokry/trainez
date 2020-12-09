@@ -1,9 +1,25 @@
 import { connect } from "getstream";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./useFirebase";
 
-export function useStream() {
+const streamContext = createContext();
+
+export function ProvideStream({ children }) {
+    const stream = useProvideStream();
+    return (
+        <streamContext.Provider value={stream}>
+            {children}
+        </streamContext.Provider>
+    );
+}
+
+export const useStream = () => {
+    return useContext(streamContext);
+};
+
+function useProvideStream() {
     const [currentUser, setCurrentUser] = useState(false);
+    const [streamToken, setStreamToken] = useState(false);
     const fire = useFirebase();
 
     const getClient = () => {
@@ -26,6 +42,7 @@ export function useStream() {
             })
             .then((json) => {
                 localStorage.setItem("stream", json.token);
+                setStreamToken(json.token);
             });
     };
 
@@ -76,5 +93,12 @@ export function useStream() {
         }
     };
 
-    return { getStreamToken, updateUser, getCurrentUser, currentUser, getUser };
+    return {
+        getStreamToken,
+        updateUser,
+        getCurrentUser,
+        currentUser,
+        getUser,
+        streamToken,
+    };
 }
