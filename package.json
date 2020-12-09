@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/taylorbryant/next-starter-tailwind#readme",
   "dependencies": {
+    "@firebase/firestore": "^2.0.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.13",

@@ -4,19 +4,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { useStream } from "../../../hooks/useStream";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function Profile() {
     const stream = useStream();
+    const auth = useAuth();
     const { register, handleSubmit, reset, getValues, setValue } = useForm();
     const [profileImg, setProfileImg] = useState(false);
 
-    stream.getUser();
+    useEffect(() => {
+        stream.getCurrentUser();
+    }, []);
 
     useEffect(() => {
-        const user = stream.user.data;
+        const user = stream.currentUser.data;
         reset(user);
         if (user?.profileImage) setProfileImg(user.profileImage);
-    }, stream.user.data);
+    }, [stream.currentUser]);
 
     const onClick = (e) => {
         e.preventDefault();
@@ -24,7 +28,6 @@ export default function Profile() {
     };
 
     const onSubmit = (data) => {
-        console.log(data);
         stream.updateUser(data);
     };
 

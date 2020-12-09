@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { StreamApp } from "react-activity-feed";
-import useSwr from "swr";
-import { useAuth } from "../hooks/useAuth";
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Stream(props) {
     const [stream, setStream] = useState(false);

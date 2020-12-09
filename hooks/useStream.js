@@ -1,16 +1,17 @@
 import { connect } from "getstream";
 import { useEffect, useState } from "react";
+import { useFirebase } from "./useFirebase";
 
 export function useStream() {
-    const [client, setClient] = useState(false);
-    const [user, setUser] = useState(false);
+    const [currentUser, setCurrentUser] = useState(false);
+    const fire = useFirebase();
 
-    useEffect(() => {
+    const getClient = () => {
         console.log("loading client");
         const token = localStorage.getItem("stream");
         const client = connect("et996ub2qf5f", token, "102445");
-        setClient(client);
-    }, []);
+        return client;
+    };
 
     const getStreamToken = (userId) => {
         fetch(`/api/stream/${userId}/token`)
@@ -28,19 +29,33 @@ export function useStream() {
             });
     };
 
-    const getUser = () => {
-        client.currentUser
+    const getUser = async (userId) => {
+        try {
+            const client = getClient();
+            console.log("Getting user: " + userId + " and client " + client);
+            return await client.user(userId).get();
+        } catch (err) {
+            console.log("Error getting user " + err);
+        }
+    };
+
+    const getCurrentUser = () => {
+        const client = getClient();
+        return client.currentUser
             ?.get()
+            .then((usr) => {
+                setCurrentUser(usr);
+                return usr;
+            })
             .catch((err) => {
                 console.log("Error getting user " + err);
-            })
-            .then((usr) => {
-                setUser(usr);
             });
     };
 
     const updateUser = async (data) => {
         try {
+            const client = getClient();
+            data.profileImage = currentUser.data?.profileImage;
             if (data.profileImageFile?.length > 0) {
                 const result = await client.images.upload(
                     data.profileImageFile[0]
@@ -55,10 +70,11 @@ export function useStream() {
                 profileImage: data.profileImage,
             };
             await client.currentUser?.update(upload);
+            await fire.updateUsername(data.userName);
         } catch (err) {
             console.log("Error updating user " + err);
         }
     };
 
-    return { getStreamToken, updateUser, getUser, user };
+    return { getStreamToken, updateUser, getCurrentUser, currentUser, getUser };
 }

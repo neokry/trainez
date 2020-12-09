@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { projectAuth } from "../configs/firebase";
+import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
 
 const authContext = createContext();
@@ -16,6 +17,7 @@ export const useAuth = () => {
 function useProvideAuth() {
     const [user, setUser] = useState(null);
     const stream = useStream();
+    const fire = useFirebase();
 
     const signin = (email, password) => {
         projectAuth
@@ -46,6 +48,7 @@ function useProvideAuth() {
             })
             .then((usr) => {
                 stream.getStreamToken(usr.uid);
+                fire.updateUsername(name);
             });
     };
 
@@ -67,7 +70,7 @@ function useProvideAuth() {
             if (usr) {
                 setUser(usr);
                 localStorage.setItem("user", usr);
-                stream.getStreamToken(usr.id);
+                stream.getStreamToken(usr.uid);
             } else {
                 setUser(false);
                 localStorage.removeItem("user");

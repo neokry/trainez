@@ -1,6 +1,5 @@
 import Stream from "../components/stream";
 import { FlatFeed, LikeButton, Activity } from "react-activity-feed";
-import "react-activity-feed/dist/index.css";
 import Layout from "../components/layout";
 import { useState } from "react";
 

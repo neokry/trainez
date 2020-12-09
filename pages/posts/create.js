@@ -8,7 +8,7 @@ export default function Create() {
     return (
         <Layout>
             <Stream>
-                <StatusUpdateForm feedGroup="timeline" />
+                <StatusUpdateForm feedGroup="user" />
             </Stream>
         </Layout>
     );
