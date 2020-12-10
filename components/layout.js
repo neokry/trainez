@@ -4,6 +4,7 @@ import Menu from "./menu";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStream } from "../hooks/useStream";
+import Loading from "./loading";
 
 function Layout(props) {
     const [showMenu, setShowMenu] = useState(false);

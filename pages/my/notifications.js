@@ -3,8 +3,15 @@ import Stream from "../../components/stream";
 import Layout from "../../components/layout";
 import { NotificationFeed, Notification } from "react-activity-feed";
 import "react-activity-feed/dist/index.css";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export default function notifications() {
+    const req = useRequireAuth();
+
+    if (!req) {
+        return <Loading />;
+    }
+
     return (
         <Layout>
             <h1 className="font-bold border-b-2 text-2xl text-gray-700">

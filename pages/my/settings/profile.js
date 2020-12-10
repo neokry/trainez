@@ -3,12 +3,15 @@ import Layout from "../../../components/layout";
 import { useStream } from "../../../hooks/useStream";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../hooks/useAuth";
+import { useRequireAuth } from "../../../hooks/useRequireAuth";
+import Loading from "../../../components/loading";
 
 export default function Profile() {
     const stream = useStream();
     const auth = useAuth();
     const { register, handleSubmit, reset, getValues, setValue } = useForm();
     const [profileImg, setProfileImg] = useState(false);
+    const req = useRequireAuth();
 
     useEffect(() => {
         stream.getCurrentUser();
@@ -19,6 +22,10 @@ export default function Profile() {
         reset(user);
         if (user?.profileImage) setProfileImg(user.profileImage);
     }, [stream.currentUser]);
+
+    if (!req) {
+        return <Loading />;
+    }
 
     const onClick = (e) => {
         e.preventDefault();

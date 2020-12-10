@@ -16,7 +16,7 @@ export default function Stream(props) {
         }
     }, [stream.streamToken]);
 
-    if (!streamToken) return <div>Loading..</div>;
+    if (!streamToken) return null;
 
     return (
         <StreamApp apiKey="et996ub2qf5f" appId="102445" token={streamToken}>

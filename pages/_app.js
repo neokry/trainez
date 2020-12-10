@@ -1,7 +1,7 @@
 import "../css/index.css";
 import "react-activity-feed/dist/index.css";
-import { ProvideAuth } from "../hooks/useAuth";
-import { ProvideStream } from "../hooks/useStream";
+import { ProvideAuth, useAuth } from "../hooks/useAuth";
+import { ProvideStream, useStream } from "../hooks/useStream";
 
 function MyApp({ Component, pageProps }) {
     return (

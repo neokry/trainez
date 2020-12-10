@@ -17,6 +17,7 @@ export const useAuth = () => {
 
 function useProvideAuth() {
     const [user, setUser] = useState(null);
+    const [authFail, setAuthFail] = useState(false);
     const stream = useStream();
     const fire = useFirebase();
     const router = useRouter();
