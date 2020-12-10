@@ -4,6 +4,7 @@ import Layout from "../../components/layout";
 import { NotificationFeed, Notification } from "react-activity-feed";
 import "react-activity-feed/dist/index.css";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
+import Loading from "../../components/loading";
 
 export default function notifications() {
     const req = useRequireAuth();

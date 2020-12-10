@@ -4,6 +4,7 @@ import { StatusUpdateForm } from "react-activity-feed";
 import Layout from "../../components/layout";
 import { useAuth } from "../../hooks/useAuth";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
+import Loading from "../../components/loading";
 
 export default function Create() {
     const req = useRequireAuth();
