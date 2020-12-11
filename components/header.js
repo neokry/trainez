@@ -9,35 +9,39 @@ import {
     faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
 
-function Header({ menuClick }) {
+function Header({ menuClick, user }) {
     return (
-        <header className="bg-green-400 fixed w-full z-20 text-2xl">
+        <header className="border-b-2 bg-white fixed w-full z-30 text-2xl">
             <div className="flex flex-wrap items-center justify-between max-w-6xl p-2 mx-auto md:flex-no-wrap">
                 <Link href="/">
-                    <a className="block text-white">
+                    <a className="block text-black">
                         <FontAwesomeIcon icon={faHome} />
                     </a>
                 </Link>
 
-                <Link href="/my/notifications">
-                    <a className="block text-white">
-                        <FontAwesomeIcon icon={faBell} />
-                    </a>
-                </Link>
+                {user && (
+                    <div>
+                        <Link href="/my/notifications">
+                            <a className="block text-black">
+                                <FontAwesomeIcon icon={faBell} />
+                            </a>
+                        </Link>
 
-                <Link href="/posts/create">
-                    <a className="block text-white">
-                        <FontAwesomeIcon icon={faPlusSquare} />
-                    </a>
-                </Link>
+                        <Link href="/posts/create">
+                            <a className="block text-black">
+                                <FontAwesomeIcon icon={faPlusSquare} />
+                            </a>
+                        </Link>
 
-                <Link href="/my/chats">
-                    <a className="block text-white">
-                        <FontAwesomeIcon icon={faCommentDots} />
-                    </a>
-                </Link>
+                        <Link href="/my/chats">
+                            <a className="block text-black">
+                                <FontAwesomeIcon icon={faCommentDots} />
+                            </a>
+                        </Link>
+                    </div>
+                )}
 
-                <button className="block text-white" onClick={menuClick}>
+                <button className="block text-black" onClick={menuClick}>
                     <FontAwesomeIcon icon={faUserCircle} />
                 </button>
             </div>

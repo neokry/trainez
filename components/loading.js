@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 
 export default function Loading() {
-    console.log("loading");
     return (
         <div className="h-screen w-screen flex items-center justify-around">
             <motion.div

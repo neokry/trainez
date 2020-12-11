@@ -48,9 +48,10 @@ function useProvideStream() {
 
     const getUser = async (userId) => {
         try {
-            const client = getClient();
-            console.log("Getting user: " + userId + " and client " + client);
-            return await client.user(userId).get();
+            const response = await fetch(`/api/stream/${userId}`);
+            const json = await response.json();
+            console.log("got json " + JSON.stringify(json));
+            return json?.user;
         } catch (err) {
             console.log("Error getting user " + err);
         }

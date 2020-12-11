@@ -18,7 +18,7 @@ export default function notifications() {
             <h1 className="font-bold border-b-2 text-2xl text-gray-700">
                 Notifications
             </h1>
-            <div className="w-1/2 mt-6">
+            <div className="md:w-1/2 mt-6">
                 <Stream>
                     <NotificationFeed
                         Group={(props) => (

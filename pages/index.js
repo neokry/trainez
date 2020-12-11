@@ -17,7 +17,19 @@ function IndexPage() {
     }, [auth]);
 
     if (authFailed) {
-        return <Signup />;
+        return (
+            <div className="md:flex md:justify-start">
+                <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
+                    <img
+                        src="landingImage.jpg"
+                        className="h-40 w-40 md:h-screen md:w-full object-top object-cover rounded-full md:rounded-md"
+                    />
+                </div>
+                <div className="md:mt-24 md:w-1/2 flex justify-around">
+                    <Signup showTitle={false} />
+                </div>
+            </div>
+        );
     } else if (auth.user) {
         return <MainFeed />;
     } else {

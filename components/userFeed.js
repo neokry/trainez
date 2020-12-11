@@ -3,7 +3,7 @@ import Stream from "./stream";
 
 export default function UserFeed({ userId }) {
     return (
-        <div className="md:w-3/4">
+        <div>
             <Stream>
                 <FlatFeed
                     feedGroup="user"

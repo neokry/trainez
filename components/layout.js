@@ -22,7 +22,7 @@ function Layout(props) {
 
     const menuClick = (e) => {
         e.preventDefault();
-        if (user) setShowMenu(!showMenu);
+        setShowMenu(!showMenu);
     };
 
     const backdropClick = (e) => {
@@ -31,7 +31,7 @@ function Layout(props) {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header menuClick={menuClick} />
+            <Header menuClick={menuClick} user={user} />
             <main className="flex-1 w-full max-w-6xl p-4 mx-auto mt-16">
                 {props.children}
                 <AnimatePresence>
