@@ -20,25 +20,27 @@ function Header({ menuClick, user }) {
                 </Link>
 
                 {user && (
-                    <div>
-                        <Link href="/my/notifications">
-                            <a className="block text-black">
-                                <FontAwesomeIcon icon={faBell} />
-                            </a>
-                        </Link>
+                    <Link href="/my/notifications">
+                        <a className="block text-black">
+                            <FontAwesomeIcon icon={faBell} />
+                        </a>
+                    </Link>
+                )}
 
-                        <Link href="/posts/create">
-                            <a className="block text-black">
-                                <FontAwesomeIcon icon={faPlusSquare} />
-                            </a>
-                        </Link>
+                {user && (
+                    <Link href="/posts/create">
+                        <a className="block text-black">
+                            <FontAwesomeIcon icon={faPlusSquare} />
+                        </a>
+                    </Link>
+                )}
 
-                        <Link href="/my/chats">
-                            <a className="block text-black">
-                                <FontAwesomeIcon icon={faCommentDots} />
-                            </a>
-                        </Link>
-                    </div>
+                {user && (
+                    <Link href="/my/chats">
+                        <a className="block text-black">
+                            <FontAwesomeIcon icon={faCommentDots} />
+                        </a>
+                    </Link>
                 )}
 
                 <button className="block text-black" onClick={menuClick}>

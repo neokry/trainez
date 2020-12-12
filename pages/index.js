@@ -14,7 +14,7 @@ function IndexPage() {
         } else {
             setAuthFailed(false);
         }
-    }, [auth]);
+    }, [auth.user]);
 
     if (authFailed) {
         return (
@@ -26,7 +26,7 @@ function IndexPage() {
                     />
                 </div>
                 <div className="md:mt-24 md:w-1/2 flex justify-around">
-                    <Signup showTitle={false} />
+                    <Signup showTitle={true} />
                 </div>
             </div>
         );

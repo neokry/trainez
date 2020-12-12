@@ -17,17 +17,12 @@ export const useAuth = () => {
 
 function useProvideAuth() {
     const [user, setUser] = useState(null);
-    const [authFail, setAuthFail] = useState(false);
     const stream = useStream();
-    const fire = useFirebase();
     const router = useRouter();
 
     const signin = (email, password) => {
         projectAuth
             .signInWithEmailAndPassword(email, password)
-            .catch((err) => {
-                console.log("Error signing ing" + err);
-            })
             .then((e) => {
                 setUser(e.user);
                 localStorage.setItem("user", e.user);
@@ -35,24 +30,42 @@ function useProvideAuth() {
             })
             .then((usr) => {
                 stream.getStreamToken(usr.uid);
+            })
+            .catch((err) => {
+                console.log("Error signing ing" + err);
+                setUser(false);
             });
     };
 
-    const signup = (email, password, name) => {
-        projectAuth
-            .createUserWithEmailAndPassword(email, password)
-            .catch((err) => {
-                console.log("Error signing up" + err);
-            })
-            .then((e) => {
-                setUser(e.user);
-                localStorage.setItem("user", e.user);
-                return e.user;
-            })
-            .then((usr) => {
-                stream.getStreamToken(usr.uid);
-                fire.updateUsername(name);
-            });
+    const signup = async (email, password, name) => {
+        try {
+            const userResult = await projectAuth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
+
+            const usr = userResult.user;
+            setUser(usr);
+            localStorage.setItem("user", usr);
+            const success = await stream.getStreamToken(usr.uid);
+
+            if (success) {
+                console.log("got token");
+                const num = Math.floor(Math.random() * 100000000);
+                const username = "u" + num;
+
+                console.log(
+                    "setting username " + username + " displayname: " + name
+                );
+                await stream.updateUser({
+                    userName: username,
+                    name: name,
+                });
+                console.log("user created");
+            }
+        } catch (err) {
+            console.log("Error signing up " + err);
+        }
     };
 
     const signout = (email, password) => {
@@ -62,6 +75,7 @@ function useProvideAuth() {
                 console.log("Error signing out" + err);
             })
             .then((e) => {
+                stream.clearUser();
                 setUser(false);
                 localStorage.removeItem("user");
                 localStorage.removeItem("stream");
@@ -76,6 +90,7 @@ function useProvideAuth() {
                 localStorage.setItem("user", usr);
                 stream.getStreamToken(usr.uid);
             } else {
+                stream.clearUser();
                 setUser(false);
                 localStorage.removeItem("user");
                 localStorage.removeItem("stream");

@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Signup from "../components/signup";
 import Loading from "../components/loading";
+import ProfilePicture from "../components/profilePicture";
 
 export default function User() {
     const router = useRouter();
@@ -24,20 +25,24 @@ export default function User() {
     const [userId, setUserId] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
     const [showSignIn, setShowSignIn] = useState(false);
+    const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
 
     const { username } = router.query;
 
-    const signInClick = (e) => {
+    const subscribeClick = (e) => {
         e.preventDefault();
-        setShowSignIn(true);
+        if (!auth.user) setShowSignIn(true);
+    };
+
+    const backClick = (e) => {
+        e.preventDefault();
+        setShowSignIn(false);
     };
 
     useEffect(() => {
         fire.getUserIdFromName(username)
             .then((userId) => {
-                if (auth.user?.uid && userId == auth.user?.uid)
-                    setIsCurrentUser(true);
                 setUserId(userId);
                 console.log("getting stream user");
                 return stream.getUser(userId);
@@ -48,30 +53,43 @@ export default function User() {
             });
     }, [username]);
 
+    useEffect(() => {
+        if (auth.user?.uid && userId && userId == auth.user?.uid)
+            setIsCurrentUser(true);
+    }, [auth.user, userId]);
+
+    useEffect(() => {
+        if (showSignIn) setShowSignIn(false);
+    }, [auth.user]);
+
     if (!user) return <Loading />;
+
+    //Subscribe modal
+    if (showSubscribeModal) {
+        return <div>SUBSCRIBE MODAL</div>;
+    }
 
     //Signup modal
     if (showSignIn)
         return (
             <div class="px-4">
                 <div className="mt-4 flex items-center">
-                    <FontAwesomeIcon
-                        icon={faArrowLeft}
-                        className="mr-4 text-xl text-gray-800"
-                    />
-                    <h1 className="text-sm">LOGIN TO FOLLOW</h1>
+                    <button onClick={backClick}>
+                        <FontAwesomeIcon
+                            icon={faArrowLeft}
+                            className="mr-4 text-xl text-gray-800"
+                        />
+                    </button>
+                    <h1 className="text-sm">LOGIN TO SUBSCRIBE</h1>
                 </div>
 
                 <div className="flex flex-col items-center mt-10">
                     <div className="flex justify-between items-stretch">
-                        <div className="border-2 rounded-full w-24 h-24 flex justify-around items-center bg-gray-400">
-                            <img
-                                src={user.profileImage}
-                                name="profileImage"
-                                alt="profile image"
-                                className="rounded-full"
-                            />
-                        </div>
+                        <ProfilePicture
+                            displayName={user.name}
+                            profileImg={user.profileImage}
+                            isSmall={false}
+                        />
                     </div>
                     <div className="mt-2">
                         <p className="font-semibold text-2xl">{user.name}</p>
@@ -102,7 +120,7 @@ export default function User() {
                                 className="text-xl text-green-400 mr-2"
                             />
                             <p className="text-sm">
-                                Direct messaging with this user
+                                One on one breakout sessions
                             </p>
                         </div>
                         <div className="flex mt-2">
@@ -111,7 +129,7 @@ export default function User() {
                                 className="text-xl text-green-400 mr-2"
                             />
                             <p className="text-sm">
-                                Cancel your subscription at any time
+                                Connect with group classes
                             </p>
                         </div>
                     </div>
@@ -127,14 +145,11 @@ export default function User() {
         <Layout>
             <div className="md:w-3/4">
                 <div className="flex justify-between items-stretch">
-                    <div className="border-2 rounded-full w-24 h-24 flex justify-around items-center bg-gray-400">
-                        <img
-                            src={user.profileImage}
-                            name="profileImage"
-                            alt="profile image"
-                            className="rounded-full"
-                        />
-                    </div>
+                    <ProfilePicture
+                        displayName={user.name}
+                        profileImg={user.profileImage}
+                        isSmall={false}
+                    />
                     <div>
                         {isCurrentUser ? (
                             <Link href="/my/settings/profile">
@@ -152,7 +167,7 @@ export default function User() {
                     <p className="text-gray-500 mt-1 text-md">{user.url}</p>
                 </div>
                 <div className="border-t-2 mt-10">
-                    {isFollowing ? (
+                    {isFollowing || isCurrentUser ? (
                         <UserFeed userId={userId}></UserFeed>
                     ) : (
                         <div className="mt-10 bg-gray-200 w-full h-64 rounded-lg flex justify-around items-center">
@@ -167,10 +182,10 @@ export default function User() {
                                 <div className="flex justify-around mt-10">
                                     <button
                                         type="button"
-                                        onClick={signInClick}
+                                        onClick={subscribeClick}
                                         className="bg-green-400 text-white px-5 py-2 rounded-full"
                                     >
-                                        FOLLOW TO SEE USERS POSTS
+                                        SUBSCRIBE TO SEE USERS POSTS
                                     </button>
                                 </div>
                             </div>

@@ -12,13 +12,11 @@ function Layout(props) {
     const stream = useStream();
 
     useEffect(() => {
-        stream.getCurrentUser();
-    }, []);
-
-    useEffect(() => {
-        const user = stream.currentUser.data;
-        setUser(user);
-    }, [stream.currentUser]);
+        if (stream.currentUser?.data !== null) {
+            const user = stream.currentUser?.data;
+            setUser(user);
+        }
+    }, [stream.currentUser?.data]);
 
     const menuClick = (e) => {
         e.preventDefault();

@@ -1,26 +1,31 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useForm } from "react-hook-form";
 
 export default function Signup({ showTitle }) {
     const [isLogin, setIsLogin] = useState(true);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
+    const { register, handleSubmit, reset, getValues, setValue } = useForm();
     const auth = useAuth();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("email: " + email + " pass: " + password);
+    const onSubmit = (data) => {
+        console.log(
+            "email: " +
+                data.email +
+                " pass: " +
+                data.password +
+                " name: " +
+                data.name
+        );
         if (isLogin) {
-            auth.signin(email, password);
+            auth.signin(data.email, data.password);
         } else {
-            auth.signup(email, password);
+            auth.signup(data.email, data.password, data.name);
         }
     };
 
     return (
         <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col w-full px-8 lg:w-1/2 text-center"
         >
             {showTitle && <h1 className="font-bold text-2xl">Train EZ</h1>}
@@ -28,27 +33,24 @@ export default function Signup({ showTitle }) {
                 <input
                     className="bg-gray-200 py-2 px-5 rounded-md"
                     placeholder="E-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    ref={register}
+                    name="email"
                     type="email"
-                    id="userEmail"
                 />
                 <input
                     className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     type="password"
-                    id="userPassword"
+                    ref={register}
+                    name="password"
                 />
                 {isLogin ? null : (
                     <input
                         className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
                         placeholder="Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
                         type="text"
-                        id="userName"
+                        ref={register}
+                        name="name"
                     />
                 )}
             </div>

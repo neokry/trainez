@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
+import ProfilePicture from "./profilePicture";
 
 export default function menu({ user }) {
     const auth = useAuth();
@@ -31,14 +32,11 @@ export default function menu({ user }) {
                     {user ? (
                         <div>
                             <div className="flex justify-between items-stretch">
-                                <div className="border-2 rounded-full w-16 h-16 flex justify-around items-center bg-gray-400">
-                                    <img
-                                        src={user.profileImage}
-                                        name="profileImage"
-                                        alt="profile image"
-                                        className="rounded-full"
-                                    />
-                                </div>
+                                <ProfilePicture
+                                    displayName={user.name}
+                                    profileImg={user.profileImage}
+                                    isSmall={true}
+                                />
                                 <div>
                                     <button className="text-2xl text-gray-500">
                                         X

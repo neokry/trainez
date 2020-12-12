@@ -18,9 +18,13 @@ export const useStream = () => {
 };
 
 function useProvideStream() {
-    const [currentUser, setCurrentUser] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
     const [streamToken, setStreamToken] = useState(false);
     const fire = useFirebase();
+
+    useEffect(() => {
+        if (streamToken) getCurrentUser();
+    }, [streamToken]);
 
     const getClient = () => {
         console.log("loading client");
@@ -29,21 +33,19 @@ function useProvideStream() {
         return client;
     };
 
-    const getStreamToken = (userId) => {
-        fetch(`/api/stream/${userId}/token`)
-            .catch((err) => {
-                console.log("Error getting stream token " + err);
-            })
-            .then((response) => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                return response.json();
-            })
-            .then((json) => {
-                localStorage.setItem("stream", json.token);
-                setStreamToken(json.token);
-            });
+    const getStreamToken = async (userId) => {
+        try {
+            const res = await fetch(`/api/stream/${userId}/token`);
+            if (!res.ok) {
+                throw Error(res.statusText);
+            }
+            const json = await res.json();
+            localStorage.setItem("stream", json.token);
+            setStreamToken(json.token);
+            return true;
+        } catch (err) {
+            console.log("Error getting stream token " + err);
+        }
     };
 
     const getUser = async (userId) => {
@@ -57,29 +59,30 @@ function useProvideStream() {
         }
     };
 
-    const getCurrentUser = () => {
-        const client = getClient();
-        return client.currentUser
-            ?.get()
-            .then((usr) => {
-                setCurrentUser(usr);
-                return usr;
-            })
-            .catch((err) => {
-                console.log("Error getting user " + err);
-            });
+    const getCurrentUser = async () => {
+        try {
+            const client = getClient();
+            const usr = await client.currentUser?.get();
+            setCurrentUser(usr);
+            return usr;
+        } catch (err) {
+            console.log("Error getting current user " + err);
+        }
     };
 
     const updateUser = async (data) => {
         try {
             const client = getClient();
-            data.profileImage = currentUser.data?.profileImage;
+            data.profileImage = currentUser?.data?.profileImage;
             if (data.profileImageFile?.length > 0) {
+                console.log("uploading profile image");
                 const result = await client.images.upload(
                     data.profileImageFile[0]
                 );
                 data.profileImage = result.file;
             }
+
+            console.log("updating user with data: " + data);
             const upload = {
                 userName: data.userName,
                 name: data.name,
@@ -88,10 +91,16 @@ function useProvideStream() {
                 profileImage: data.profileImage,
             };
             await client.currentUser?.update(upload);
-            await fire.updateUsername(data.userName);
+            await fire.updateUsername(client.currentUser.id, data.userName);
+            await getCurrentUser();
         } catch (err) {
             console.log("Error updating user " + err);
         }
+    };
+
+    const clearUser = () => {
+        setCurrentUser(null);
+        setStreamToken(false);
     };
 
     return {
@@ -101,5 +110,6 @@ function useProvideStream() {
         currentUser,
         getUser,
         streamToken,
+        clearUser,
     };
 }

@@ -4,15 +4,12 @@ import { useAuth } from "./useAuth";
 export function useFirebase() {
     const auth = useAuth();
 
-    const updateUsername = async (username) => {
+    const updateUsername = async (userId, username) => {
         try {
-            console.log("updating username");
-            await projectFirestore
-                .collection("usernames")
-                .doc(auth.user.uid)
-                .set({
-                    username: username,
-                });
+            console.log("updating username " + username + "for id " + userId);
+            await projectFirestore.collection("usernames").doc(userId).set({
+                username: username,
+            });
         } catch (err) {
             console.log("Error updating user name " + err);
         }

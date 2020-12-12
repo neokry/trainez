@@ -5,12 +5,14 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../../hooks/useAuth";
 import { useRequireAuth } from "../../../hooks/useRequireAuth";
 import Loading from "../../../components/loading";
+import ProfilePicture from "../../../components/profilePicture";
 
 export default function Profile() {
     const stream = useStream();
     const auth = useAuth();
     const { register, handleSubmit, reset, getValues, setValue } = useForm();
     const [profileImg, setProfileImg] = useState(false);
+    const [userName, setUserName] = useState("");
     const req = useRequireAuth();
 
     useEffect(() => {
@@ -18,9 +20,12 @@ export default function Profile() {
     }, []);
 
     useEffect(() => {
-        const user = stream.currentUser.data;
-        reset(user);
-        if (user?.profileImage) setProfileImg(user.profileImage);
+        if (stream.currentUser?.data !== null) {
+            const user = stream.currentUser?.data;
+            reset(user);
+            if (user?.name) setUserName(user.name);
+            if (user?.profileImage) setProfileImg(user.profileImage);
+        }
     }, [stream.currentUser]);
 
     if (!req) {
@@ -55,7 +60,7 @@ export default function Profile() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="md:w-1/2">
-                <label className="border-2 rounded-full w-20 h-20 flex justify-around items-center mt-4 bg-gray-400">
+                <label className="flex items-left w-24 mt-4">
                     <input
                         type="file"
                         className="invisible z-30 absolute"
@@ -65,23 +70,12 @@ export default function Profile() {
                         name="profileImageFile"
                     />
 
-                    <img
-                        src="/camera.png"
-                        className="text-white w-5 h-5 z-20 absolute"
-                    ></img>
-
-                    {profileImg ? (
-                        <img
-                            src={profileImg}
-                            name="profileImage"
-                            alt="profile image"
-                            className="rounded-full"
-                        />
-                    ) : (
-                        <p className="text-4xl font-bold text-green-400 z-10 absolute">
-                            PG
-                        </p>
-                    )}
+                    <ProfilePicture
+                        displayName={userName}
+                        profileImg={profileImg}
+                        isSmall={false}
+                        isEditable={true}
+                    />
                 </label>
                 <div className="mt-4">
                     <p>Username</p>

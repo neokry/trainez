@@ -1,16 +1,17 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuth } from "./useAuth";
+import { useStream } from "./useStream";
 
 export function useRequireAuth(redirectUrl = "/") {
-    const auth = useAuth();
+    const stream = useStream();
     const router = useRouter();
 
     useEffect(() => {
-        if (auth.user === false) {
+        if (stream.currentUser === false) {
             router.push(redirectUrl);
         }
-    }, [auth, router]);
+    }, [stream.currentUser, router]);
 
-    return auth.user;
+    return stream.currentUser;
 }
