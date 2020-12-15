@@ -27,5 +27,17 @@ export function useFirebase() {
         }
     };
 
-    return { updateUsername, getUserIdFromName };
+    const isMemberCodeValid = async (userId, memberCode) => {
+        try {
+            const doc = await projectFirestore
+                .collection("memberCodes")
+                .doc(userId)
+                .get();
+            return doc.data().code === memberCode;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    return { updateUsername, getUserIdFromName, isMemberCodeValid };
 }

@@ -11,21 +11,21 @@ import {
 
 function Header({ menuClick, user }) {
     return (
-        <header className="border-b-2 bg-white fixed w-full z-30 text-2xl">
-            <div className="flex flex-wrap items-center justify-between max-w-6xl p-2 mx-auto md:flex-no-wrap">
+        <header className="border-b-2 bg-white fixed z-30 w-full text-2xl">
+            <div className="w-3/4 flex flex-wrap items-center justify-between max-w-6xl p-2 mx-auto md:flex-no-wrap">
                 <Link href="/">
                     <a className="block text-black">
                         <FontAwesomeIcon icon={faHome} />
                     </a>
                 </Link>
 
-                {user && (
+                {/*user && (
                     <Link href="/my/notifications">
                         <a className="block text-black">
                             <FontAwesomeIcon icon={faBell} />
                         </a>
                     </Link>
-                )}
+                )*/}
 
                 {user && (
                     <Link href="/posts/create">
@@ -35,13 +35,13 @@ function Header({ menuClick, user }) {
                     </Link>
                 )}
 
-                {user && (
+                {/*user && (
                     <Link href="/my/chats">
                         <a className="block text-black">
                             <FontAwesomeIcon icon={faCommentDots} />
                         </a>
                     </Link>
-                )}
+                )*/}
 
                 <button className="block text-black" onClick={menuClick}>
                     <FontAwesomeIcon icon={faUserCircle} />

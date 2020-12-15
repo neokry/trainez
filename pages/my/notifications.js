@@ -21,6 +21,7 @@ export default function notifications() {
             <div className="md:w-1/2 mt-6">
                 <Stream>
                     <NotificationFeed
+                        feedGroup="notification"
                         Group={(props) => (
                             <Notification
                                 {...props}

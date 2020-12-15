@@ -103,6 +103,32 @@ function useProvideStream() {
         setStreamToken(false);
     };
 
+    const followUser = async (userId) => {
+        try {
+            const client = getClient();
+            const feed = client.feed("timeline", client.currentUser.id);
+            const result = await feed.follow("user", userId);
+            if (result) return true;
+        } catch (err) {
+            console.log("Error following user " + err);
+        }
+    };
+
+    const isFollowing = async (userId) => {
+        try {
+            const client = getClient();
+            const feed = client.feed("timeline", client.currentUser.id);
+            const res = await feed.following({
+                limit: 1,
+                offset: 0,
+                filter: ["user:" + userId],
+            });
+            return res.results.length > 0;
+        } catch (err) {
+            console.log("Error checking user following " + err);
+        }
+    };
+
     return {
         getStreamToken,
         updateUser,
@@ -111,5 +137,7 @@ function useProvideStream() {
         getUser,
         streamToken,
         clearUser,
+        followUser,
+        isFollowing,
     };
 }
