@@ -1,5 +1,6 @@
 import { Activity, FlatFeed, LikeButton } from "react-activity-feed";
 import Stream from "./stream";
+import { UserActivity } from "./userActivity";
 
 export default function UserFeed({ userId }) {
     return (
@@ -10,18 +11,7 @@ export default function UserFeed({ userId }) {
                     userId={userId}
                     options={{ reactions: { recent: true } }}
                     notify
-                    Activity={(props) => (
-                        <div className="py-2 border-b-2">
-                            <Activity
-                                {...props}
-                                Footer={() => (
-                                    <div>
-                                        <LikeButton {...props} />
-                                    </div>
-                                )}
-                            />
-                        </div>
-                    )}
+                    Activity={(props) => <UserActivity props={props} />}
                 />
             </Stream>
         </div>

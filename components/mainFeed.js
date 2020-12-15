@@ -2,6 +2,7 @@ import Stream from "../components/stream";
 import { FlatFeed, LikeButton, Activity } from "react-activity-feed";
 import Layout from "../components/layout";
 import { useState } from "react";
+import { UserActivity } from "./userActivity";
 
 export default function MainFeed() {
     const [showComments, setShowComments] = useState(false);
@@ -22,18 +23,7 @@ export default function MainFeed() {
                     <FlatFeed
                         options={{ reactions: { recent: true } }}
                         notify
-                        Activity={(props) => (
-                            <div className="py-2 border-b-2">
-                                <Activity
-                                    {...props}
-                                    Footer={() => (
-                                        <div>
-                                            <LikeButton {...props} />
-                                        </div>
-                                    )}
-                                />
-                            </div>
-                        )}
+                        Activity={(props) => <UserActivity props={props} />}
                     />
                 </Stream>
             </div>

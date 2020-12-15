@@ -9,7 +9,6 @@ import ProfilePicture from "../../../components/profilePicture";
 
 export default function Profile() {
     const stream = useStream();
-    const auth = useAuth();
     const { register, handleSubmit, reset, getValues, setValue } = useForm();
     const [profileImg, setProfileImg] = useState(false);
     const [userName, setUserName] = useState("");
@@ -31,11 +30,6 @@ export default function Profile() {
     if (!req) {
         return <Loading />;
     }
-
-    const onClick = (e) => {
-        e.preventDefault();
-        auth.signout();
-    };
 
     const onSubmit = (data) => {
         stream.updateUser(data);
@@ -124,8 +118,6 @@ export default function Profile() {
                     Save
                 </button>
             </form>
-
-            <button onClick={onClick}>Sign Out</button>
         </Layout>
     );
 }
