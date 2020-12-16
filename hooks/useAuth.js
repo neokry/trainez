@@ -18,6 +18,7 @@ export const useAuth = () => {
 function useProvideAuth() {
     const [user, setUser] = useState(null);
     const stream = useStream();
+    const fire = useFirebase();
     const router = useRouter();
 
     const signin = (email, password) => {
@@ -61,6 +62,9 @@ function useProvideAuth() {
                     userName: username,
                     name: name,
                 });
+
+                await fire.createMemberCode(usr.uid);
+
                 console.log("user created");
             }
         } catch (err) {

@@ -45,9 +45,34 @@ export function useFirebase() {
                 .collection("memberCodes")
                 .doc(userId)
                 .get();
-            return doc.data().code === memberCode;
+            return doc.data()?.code === memberCode;
         } catch (err) {
             console.log(err);
+        }
+    };
+
+    const createMemberCode = async (userId) => {
+        try {
+            const code = Math.random().toString(36).slice(-5);
+            await projectFirestore
+                .collection("memberCodes")
+                .doc(userId)
+                .set({ code: code });
+        } catch (err) {
+            console.log("Error creating member code " + err);
+        }
+    };
+
+    const getMemberCode = async (userId) => {
+        try {
+            console.log(userId);
+            const doc = await projectFirestore
+                .collection("memberCodes")
+                .doc(userId)
+                .get();
+            return doc.data()?.code;
+        } catch (err) {
+            console.log("Error getting member code " + err);
         }
     };
 
@@ -56,5 +81,7 @@ export function useFirebase() {
         getUserIdFromName,
         isMemberCodeValid,
         isUsernameAvailible,
+        createMemberCode,
+        getMemberCode,
     };
 }

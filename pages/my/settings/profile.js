@@ -7,6 +7,9 @@ import { useRequireAuth } from "../../../hooks/useRequireAuth";
 import Loading from "../../../components/loading";
 import ProfilePicture from "../../../components/profilePicture";
 import { useFirebase } from "../../../hooks/useFirebase";
+import { layer } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShare, faShareSquare } from "@fortawesome/free-solid-svg-icons";
 
 export default function Profile() {
     const stream = useStream();
@@ -14,6 +17,8 @@ export default function Profile() {
     const { register, handleSubmit, reset, getValues, errors } = useForm();
     const [profileImg, setProfileImg] = useState(false);
     const [userName, setUserName] = useState("");
+    const [memberCode, setMemberCode] = useState("");
+    const [showCopiedText, setShowCopiedText] = useState(false);
     const req = useRequireAuth();
 
     useEffect(() => {
@@ -23,11 +28,18 @@ export default function Profile() {
     useEffect(() => {
         if (stream.currentUser?.data !== null) {
             const user = stream.currentUser?.data;
+            if (!user) return;
             reset(user);
             if (user?.name) setUserName(user.name);
             if (user?.profileImage) setProfileImg(user.profileImage);
+            getMemberCode();
         }
     }, [stream.currentUser]);
+
+    const getMemberCode = async () => {
+        const code = await fire.getMemberCode(stream.currentUser.id);
+        setMemberCode(code);
+    };
 
     const validateUsername = async (username) => {
         console.log(stream.currentUser.id);
@@ -36,6 +48,12 @@ export default function Profile() {
 
     const onSubmit = (data) => {
         stream.updateUser(data);
+    };
+
+    const copyToClipboard = (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(memberCode);
+        setShowCopiedText(true);
     };
 
     const imgPreview = (e) => {
@@ -129,6 +147,34 @@ export default function Profile() {
                         name="url"
                     ></input>
                 </div>
+                {memberCode && (
+                    <>
+                        <div className="mt-4 flex items-baseline">
+                            <p className="mr-2">Member Code:</p>
+                            <div className="mr-2">
+                                <label className="text-lg font-bold">
+                                    {memberCode}
+                                </label>
+                            </div>
+                            <button
+                                className="mr-2"
+                                type="button"
+                                onClick={copyToClipboard}
+                            >
+                                <FontAwesomeIcon icon={faShareSquare} />
+                            </button>
+                        </div>
+                        {showCopiedText && (
+                            <p class="text-md text-green-400">
+                                Copied member code to clipboard!
+                            </p>
+                        )}
+                        <p className="text-gray-600">
+                            (Gives members access to your paid content)
+                        </p>
+                    </>
+                )}
+
                 <button
                     type="submit"
                     className="w-full p-2 bg-green-500 rounded-md text-white shadow-sm mt-4"
