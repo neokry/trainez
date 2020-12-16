@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 
 export default function Signup({ showTitle }) {
     const [isLogin, setIsLogin] = useState(true);
-    const { register, handleSubmit, reset, getValues, setValue } = useForm();
+    const { register, handleSubmit, errors } = useForm();
     const auth = useAuth();
 
     const onSubmit = (data) => {
@@ -33,27 +34,47 @@ export default function Signup({ showTitle }) {
                 <input
                     className="bg-gray-200 py-2 px-5 rounded-md"
                     placeholder="E-mail"
-                    ref={register}
+                    ref={register({
+                        required: "The email field is required",
+                    })}
                     name="email"
                     type="email"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="email" />
+                </div>
+
                 <input
                     className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
                     placeholder="Password"
                     type="password"
-                    ref={register}
+                    ref={register({
+                        required: "The password field is required",
+                    })}
                     name="password"
                 />
-                {isLogin ? null : (
-                    <input
-                        className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
-                        placeholder="Name"
-                        type="text"
-                        ref={register}
-                        name="name"
-                    />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="password" />
+                </div>
+
+                {!isLogin && (
+                    <>
+                        <input
+                            className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
+                            placeholder="Name"
+                            type="text"
+                            ref={register({
+                                required: "The name field is required",
+                            })}
+                            name="name"
+                        />
+                        <div className="flex items-start text-red-400">
+                            <ErrorMessage errors={errors} name="name" />
+                        </div>
+                    </>
                 )}
             </div>
+
             <button
                 type="submit"
                 className="rounded-md bg-green-500 text-white font-bold text-xl py-2 mt-5"

@@ -15,6 +15,18 @@ export function useFirebase() {
         }
     };
 
+    const isUsernameAvailible = async (userId, username) => {
+        try {
+            const snap = await projectFirestore
+                .collection("usernames")
+                .where("username", "==", username)
+                .get();
+            return !snap.docs[0].exists || snap.docs[0].id === userId;
+        } catch (err) {
+            console.log("Error checking username " + err);
+        }
+    };
+
     const getUserIdFromName = async (username) => {
         try {
             const snap = await projectFirestore
@@ -39,5 +51,10 @@ export function useFirebase() {
         }
     };
 
-    return { updateUsername, getUserIdFromName, isMemberCodeValid };
+    return {
+        updateUsername,
+        getUserIdFromName,
+        isMemberCodeValid,
+        isUsernameAvailible,
+    };
 }

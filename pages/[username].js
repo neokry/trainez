@@ -11,10 +11,13 @@ import {
     faLock,
     faArrowLeft,
     faCheck,
+    faShareSquare,
+    faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import Signup from "../components/signup";
 import Loading from "../components/loading";
 import ProfilePicture from "../components/profilePicture";
+import { motion } from "framer-motion";
 
 export default function User() {
     const router = useRouter();
@@ -28,6 +31,7 @@ export default function User() {
     const [showSignIn, setShowSignIn] = useState(false);
     const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [showLinkNotification, setShowLinkNotification] = useState(false);
 
     const { username } = router.query;
 
@@ -51,6 +55,16 @@ export default function User() {
     const backClick = (e) => {
         e.preventDefault();
         setShowSignIn(false);
+    };
+
+    const copyToClipboard = (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(window.location.href);
+        setShowLinkNotification(true);
+
+        setTimeout(function () {
+            setShowLinkNotification(false);
+        }, 3000);
     };
 
     const initPage = async (_username) => {
@@ -111,6 +125,7 @@ export default function User() {
     //Public profile
     return (
         <>
+            {showLinkNotification && <LinkNotification />}
             {showSubscribeModal && (
                 <SubscribeModal
                     user={user}
@@ -127,13 +142,29 @@ export default function User() {
                             isSmall={false}
                         />
                         <div>
-                            {isCurrentUser ? (
-                                <Link href="/my/settings/profile">
-                                    <a className="px-4 py-2 border-2 border-green-400 rounded-full text-green-400">
-                                        Edit Profile
-                                    </a>
-                                </Link>
-                            ) : null}
+                            {isCurrentUser && (
+                                <div className="flex items-center">
+                                    <div className="w-34 px-2 mr-2 h-12 border-2 border-green-400 rounded-full text-green-400 flex items-center justify-around">
+                                        <Link href="/my/settings/profile">
+                                            <>
+                                                <FontAwesomeIcon
+                                                    className="text-xl mr-3"
+                                                    icon={faCog}
+                                                />
+                                                <a className="mr-2">
+                                                    Edit Profile
+                                                </a>
+                                            </>
+                                        </Link>
+                                    </div>
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className="w-12 h-12 border-2 border-green-400 rounded-full text-green-400 text-xl"
+                                    >
+                                        <FontAwesomeIcon icon={faShareSquare} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="mt-2">
@@ -274,5 +305,40 @@ function SubscribeModal({ setShowSubscribeModal, user, subscribe }) {
             </div>
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
         </>
+    );
+}
+
+function LinkNotification() {
+    return (
+        <motion.div
+            initial={{ y: "100vw" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100vw" }}
+            transition={{ ease: "easeOut", duration: 0.25 }}
+            class="flex h-20 fixed items-end justify-around bottom-0 inset-x-0 z-40"
+        >
+            <div class="m-auto">
+                <div class="bg-green-400 rounded-lg border-gray-300 border p-3 shadow-lg">
+                    <div class="flex flex-row">
+                        <div class="px-2">
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 1792 1792"
+                                fill="#FFFFFF"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path d="M1299 813l-422 422q-19 19-45 19t-45-19l-294-294q-19-19-19-45t19-45l102-102q19-19 45-19t45 19l147 147 275-275q19-19 45-19t45 19l102 102q19 19 19 45t-19 45zm141 83q0-148-73-273t-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73 273-73 198-198 73-273zm224 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z" />
+                            </svg>
+                        </div>
+                        <div class="ml-2 mr-6">
+                            <span class="block text-white">
+                                Link to profile was copied to clipboard
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
     );
 }

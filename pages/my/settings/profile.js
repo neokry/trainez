@@ -6,10 +6,12 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useRequireAuth } from "../../../hooks/useRequireAuth";
 import Loading from "../../../components/loading";
 import ProfilePicture from "../../../components/profilePicture";
+import { useFirebase } from "../../../hooks/useFirebase";
 
 export default function Profile() {
     const stream = useStream();
-    const { register, handleSubmit, reset, getValues, setValue } = useForm();
+    const fire = useFirebase();
+    const { register, handleSubmit, reset, getValues, errors } = useForm();
     const [profileImg, setProfileImg] = useState(false);
     const [userName, setUserName] = useState("");
     const req = useRequireAuth();
@@ -27,9 +29,10 @@ export default function Profile() {
         }
     }, [stream.currentUser]);
 
-    if (!req) {
-        return <Loading />;
-    }
+    const validateUsername = async (username) => {
+        console.log(stream.currentUser.id);
+        return await fire.isUsernameAvailible(stream.currentUser.id, username);
+    };
 
     const onSubmit = (data) => {
         stream.updateUser(data);
@@ -38,12 +41,19 @@ export default function Profile() {
     const imgPreview = (e) => {
         const { profileImageFile } = getValues();
         var file = profileImageFile[0];
+
+        console.log(file);
+
         var reader = new FileReader();
         reader.onloadend = () => {
             setProfileImg(reader.result);
         };
         reader.readAsDataURL(file);
     };
+
+    if (!req) {
+        return <Loading />;
+    }
 
     return (
         <Layout>
@@ -78,8 +88,16 @@ export default function Profile() {
                         className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
                         placeholder="Username"
                         name="userName"
-                        ref={register}
+                        ref={register({
+                            validate: async (value) =>
+                                await validateUsername(value),
+                        })}
                     ></input>
+                    {errors.userName && (
+                        <p className="text-red-400">
+                            Username is not availible.
+                        </p>
+                    )}
                 </div>
                 <div className="mt-4">
                     <p>Display name</p>
