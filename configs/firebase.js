@@ -3,14 +3,14 @@ import "firebase/auth";
 import "firebase/firestore";
 
 var firebaseConfig = {
-    apiKey: "AIzaSyAYTFtql07Xba0XDGOHgQnvQhCbo8VcHiw",
-    authDomain: "trainez-a0455.firebaseapp.com",
-    databaseURL: "https://trainez-a0455.firebaseio.com",
-    projectId: "trainez-a0455",
-    storageBucket: "trainez-a0455.appspot.com",
-    messagingSenderId: "131093028525",
-    appId: "1:131093028525:web:84d75cd44bbfad87e9b024",
-    measurementId: "G-KSYR4ZE3PD",
+    apiKey: process.env.NEXT_PUBLIC_FIRE_KEY,
+    authDomain: `${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.firebaseapp.com`,
+    databaseURL: `https://${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.firebaseio.com`,
+    projectId: process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME,
+    storageBucket: `${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.appspot.com`,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIRE_MESSAGE_ID,
+    appId: process.env.NEXT_PUBLIC_FIRE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIRE_MEASUREMENT_ID,
 };
 
 try {
