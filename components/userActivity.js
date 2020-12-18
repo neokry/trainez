@@ -69,9 +69,3 @@ export function UserActivity({ props }) {
         </div>
     );
 }
-
-function VideoActivity() {
-    return (
-        
-    )
-}
