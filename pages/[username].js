@@ -13,6 +13,7 @@ import {
     faCheck,
     faShareSquare,
     faCog,
+    faLink,
 } from "@fortawesome/free-solid-svg-icons";
 import Signup from "../components/signup";
 import Loading from "../components/loading";
@@ -178,7 +179,20 @@ export default function User() {
                             @{user.userName}
                         </p>
                         <p className="mt-5 text-lg">{user.bio}</p>
-                        <p className="text-gray-500 mt-1 text-md">{user.url}</p>
+                        <a
+                            href={"http://" + user.url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            className="flex items-center mt-1"
+                        >
+                            <FontAwesomeIcon
+                                className="text-gray-500 "
+                                icon={faLink}
+                            />
+                            <p className="text-gray-500 ml-1 text-md">
+                                {user.url}
+                            </p>
+                        </a>
                     </div>
                     <div className="border-t-2 mt-10">
                         {isFollowing || isCurrentUser ? (

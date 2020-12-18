@@ -26,7 +26,7 @@ export default function menu({ user }) {
                 animate={{ x: 0 }}
                 exit={{ x: "100vw" }}
                 transition={{ ease: "easeOut", duration: 0.25 }}
-                className="fixed bg-white top-0 right-0 w-2/3 md:w-1/3 lg:w-1/4 h-full z-10 shadow flex justify-between"
+                className="fixed bg-white top-0 right-0 w-2/3 md:w-1/3 lg:w-1/4 h-full z-30 shadow flex justify-between"
             >
                 <div className="mt-20 w-full px-4">
                     {user ? (

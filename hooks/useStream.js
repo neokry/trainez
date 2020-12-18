@@ -93,8 +93,10 @@ function useProvideStream() {
             await client.currentUser?.update(upload);
             await fire.updateUsername(client.currentUser.id, data.userName);
             await getCurrentUser();
+            return true;
         } catch (err) {
             console.log("Error updating user " + err);
+            return false;
         }
     };
 

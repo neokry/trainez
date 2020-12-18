@@ -19,6 +19,7 @@ export default function Profile() {
     const [userName, setUserName] = useState("");
     const [memberCode, setMemberCode] = useState("");
     const [showCopiedText, setShowCopiedText] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     const req = useRequireAuth();
 
     useEffect(() => {
@@ -46,8 +47,9 @@ export default function Profile() {
         return await fire.isUsernameAvailible(stream.currentUser.id, username);
     };
 
-    const onSubmit = (data) => {
-        stream.updateUser(data);
+    const onSubmit = async (data) => {
+        const result = await stream.updateUser(data);
+        setIsSaved(result);
     };
 
     const copyToClipboard = (e) => {
@@ -165,7 +167,7 @@ export default function Profile() {
                             </button>
                         </div>
                         {showCopiedText && (
-                            <p class="text-md text-green-400">
+                            <p class="text-md text-green-600">
                                 Copied member code to clipboard!
                             </p>
                         )}
@@ -182,6 +184,8 @@ export default function Profile() {
                     Save
                 </button>
             </form>
+
+            {isSaved && <p class="text-md text-green-600">Settings saved!</p>}
         </Layout>
     );
 }
