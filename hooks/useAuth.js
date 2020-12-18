@@ -21,21 +21,21 @@ function useProvideAuth() {
     const fire = useFirebase();
     const router = useRouter();
 
-    const signin = (email, password) => {
-        projectAuth
-            .signInWithEmailAndPassword(email, password)
-            .then((e) => {
-                setUser(e.user);
-                localStorage.setItem("user", e.user);
-                return e.user;
-            })
-            .then((usr) => {
-                stream.getStreamToken(usr.uid);
-            })
-            .catch((err) => {
-                console.log("Error signing ing" + err);
-                setUser(false);
-            });
+    const signin = async (email, password) => {
+        try {
+            const response = await projectAuth.signInWithEmailAndPassword(
+                email,
+                password
+            );
+            const usr = response.user;
+            setUser(usr);
+            localStorage.setItem("user", usr);
+            await stream.getStreamToken(usr.uid);
+        } catch (err) {
+            console.log("Error signing in " + err);
+            setUser(false);
+            throw err;
+        }
     };
 
     const signup = async (email, password, name) => {
@@ -69,6 +69,7 @@ function useProvideAuth() {
             }
         } catch (err) {
             console.log("Error signing up " + err);
+            throw err;
         }
     };
 

@@ -12,8 +12,6 @@ var firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIRE_MEASUREMENT_ID,
 };
 
-console.log(firebaseConfig);
-
 try {
     firebase.initializeApp(firebaseConfig);
 } catch (err) {

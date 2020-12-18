@@ -5,22 +5,27 @@ import { ErrorMessage } from "@hookform/error-message";
 
 export default function Signup({ showTitle }) {
     const [isLogin, setIsLogin] = useState(true);
+    const [error, setError] = useState(false);
     const { register, handleSubmit, errors } = useForm();
     const auth = useAuth();
 
-    const onSubmit = (data) => {
-        console.log(
-            "email: " +
-                data.email +
-                " pass: " +
-                data.password +
-                " name: " +
-                data.name
-        );
-        if (isLogin) {
-            auth.signin(data.email, data.password);
-        } else {
-            auth.signup(data.email, data.password, data.name);
+    const onSubmit = async (data) => {
+        try {
+            if (isLogin) {
+                await auth.signin(data.email, data.password);
+            } else {
+                await auth.signup(data.email, data.password, data.name);
+            }
+        } catch (err) {
+            console.log(err.code);
+            if (
+                err.code == "auth/wrong-password" ||
+                err.code == "auth/user-not-found"
+            ) {
+                setError("Wrong email or password");
+            } else {
+                setError("An unexpected error has occured");
+            }
         }
     };
 
@@ -74,6 +79,8 @@ export default function Signup({ showTitle }) {
                     </>
                 )}
             </div>
+
+            {error && <p className="text-red-600">{error}</p>}
 
             <button
                 type="submit"
