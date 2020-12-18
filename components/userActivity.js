@@ -7,10 +7,17 @@ import {
 } from "react-activity-feed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
 
 export function UserActivity({ props }) {
     const [showComments, setShowComments] = useState(false);
+    const router = useRouter();
     console.log(props);
+
+    const onClickUser = (user) => {
+        const userName = user.data.userName;
+        router.push("/" + userName);
+    };
 
     const onCommentClick = (e) => {
         e.preventDefault();
@@ -21,6 +28,7 @@ export function UserActivity({ props }) {
     return (
         <div className="py-2 border-b-2">
             <Activity
+                onClickUser={onClickUser}
                 {...props}
                 Footer={() => (
                     <div>
@@ -60,4 +68,10 @@ export function UserActivity({ props }) {
             />
         </div>
     );
+}
+
+function VideoActivity() {
+    return (
+        
+    )
 }

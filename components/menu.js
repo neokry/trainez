@@ -65,7 +65,7 @@ export default function menu({ user }) {
                                             icon={faCog}
                                             className="text-xl m-2"
                                         />
-                                        <p className="text-sm">Settings</p>
+                                        <p className="text-sm">Edit Profile</p>
                                     </div>
                                 </Link>
                             </div>

@@ -35,6 +35,46 @@ export default function User() {
 
     const { username } = router.query;
 
+    useEffect(() => {
+        if (username) initPage(username);
+    }, [username]);
+
+    useEffect(() => {
+        if (
+            stream.currentUser?.id &&
+            userId &&
+            userId == stream.currentUser?.id
+        )
+            setIsCurrentUser(true);
+    }, [stream.currentUser, userId]);
+
+    useEffect(() => {
+        if (showSignIn) {
+            setShowSignIn(false);
+            setShowSubscribeModal(true);
+        }
+    }, [stream.currentUser]);
+
+    const initPage = async (_username) => {
+        try {
+            setUser(false);
+            setUserId(false);
+            setIsFollowing(false);
+            setIsCurrentUser(false);
+
+            const userIdResult = await fire.getUserIdFromName(_username);
+            setUserId(userIdResult);
+
+            const isFollowingResult = await stream.isFollowing(userIdResult);
+            setIsFollowing(isFollowingResult);
+
+            const userResult = await stream.getUser(userIdResult);
+            setUser(userResult?.data);
+        } catch (err) {
+            console.log("Error loading page " + err);
+        }
+    };
+
     const subscribeClick = (e) => {
         e.preventDefault();
         if (!auth.user) setShowSignIn(true);
@@ -66,37 +106,6 @@ export default function User() {
             setShowLinkNotification(false);
         }, 3000);
     };
-
-    const initPage = async (_username) => {
-        try {
-            const userIdResult = await fire.getUserIdFromName(_username);
-            setUserId(userIdResult);
-
-            const isFollowingResult = await stream.isFollowing(userIdResult);
-            setIsFollowing(isFollowingResult);
-
-            const userResult = await stream.getUser(userIdResult);
-            setUser(userResult?.data);
-        } catch (err) {
-            console.log("Error loading page " + err);
-        }
-    };
-
-    useEffect(() => {
-        if (username) initPage(username);
-    }, [username]);
-
-    useEffect(() => {
-        if (auth.user?.uid && userId && userId == auth.user?.uid)
-            setIsCurrentUser(true);
-    }, [auth.user, userId]);
-
-    useEffect(() => {
-        if (showSignIn) {
-            setShowSignIn(false);
-            setShowSubscribeModal(true);
-        }
-    }, [auth.user]);
 
     if (!user) return <Loading />;
 

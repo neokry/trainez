@@ -1,6 +1,6 @@
 import { connect } from "getstream";
 
-export default function Token(req, res) {
+export default async function Token(req, res) {
     const {
         query: { userid },
     } = req;
@@ -11,7 +11,8 @@ export default function Token(req, res) {
         "102445"
     );
 
-    const token = client.createUserToken(userid);
+    await client.user(userid).getOrCreate();
+    const token = await client.createUserToken(userid);
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");
