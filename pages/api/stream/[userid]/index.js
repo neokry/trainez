@@ -6,9 +6,9 @@ export default async function UserId(req, res) {
     } = req;
 
     const client = connect(
-        "et996ub2qf5f",
-        "du4jf5cushrmccfujkgf2866xy33295f5anq7xyxfm9ayds3c6m8kuy4vgnxnafc",
-        "102445"
+        process.env.NEXT_PUBLIC_STREAM_KEY,
+        process.env.STREAM_SECRET,
+        process.env.NEXT_PUBLIC_STREAM_APP_ID
     );
 
     const user = await client.user(userid).get();

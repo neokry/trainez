@@ -19,7 +19,11 @@ export default function Stream(props) {
     if (!streamToken) return null;
 
     return (
-        <StreamApp apiKey="et996ub2qf5f" appId="102445" token={streamToken}>
+        <StreamApp
+            apiKey={process.env.NEXT_PUBLIC_STREAM_KEY}
+            appId={process.env.NEXT_PUBLIC_STREAM_APP_ID}
+            token={streamToken}
+        >
             {props.children}
         </StreamApp>
     );

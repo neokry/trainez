@@ -29,7 +29,11 @@ function useProvideStream() {
     const getClient = () => {
         console.log("loading client");
         const token = localStorage.getItem("stream");
-        const client = connect("et996ub2qf5f", token, "102445");
+        const client = connect(
+            process.env.NEXT_PUBLIC_STREAM_KEY,
+            token,
+            process.env.NEXT_PUBLIC_STREAM_APP_ID
+        );
         return client;
     };
 
