@@ -5,7 +5,6 @@ import "firebase/firestore";
 var firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIRE_KEY,
     authDomain: `${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.firebaseapp.com`,
-    databaseURL: `https://${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.firebaseio.com`,
     projectId: process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME,
     storageBucket: `${process.env.NEXT_PUBLIC_FIRE_PROJECT_NAME}.appspot.com`,
     messagingSenderId: process.env.NEXT_PUBLIC_FIRE_MESSAGE_ID,
