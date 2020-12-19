@@ -3,9 +3,9 @@ import "react-activity-feed/dist/index.css";
 import { ProvideAuth } from "../hooks/useAuth";
 import { ProvideStream } from "../hooks/useStream";
 import firebase from "firebase";
-import { useEffect } from "react/cjs/react.development";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
+import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
