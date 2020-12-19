@@ -1,6 +1,7 @@
 import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
+import "firebase/analytics";
 
 var firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIRE_KEY,

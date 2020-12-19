@@ -3,6 +3,7 @@ import { projectAuth } from "../configs/firebase";
 import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
 import { useRouter } from "next/router";
+import firebase from "firebase";
 
 const authContext = createContext();
 
@@ -31,6 +32,7 @@ function useProvideAuth() {
             setUser(usr);
             localStorage.setItem("user", usr);
             await stream.getStreamToken(usr.uid);
+            firebase.analytics().logEvent("login", { method: "email" });
         } catch (err) {
             console.log("Error signing in " + err);
             setUser(false);
@@ -64,6 +66,7 @@ function useProvideAuth() {
                 });
 
                 await fire.createMemberCode(usr.uid);
+                firebase.analytics().logEvent("sign_up", { method: "email" });
 
                 console.log("user created");
             }
