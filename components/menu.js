@@ -69,32 +69,37 @@ export default function menu({ user }) {
                                     </div>
                                 </Link>
                             </div>
-                            {/* 
-                                        <div className="mt-5 border-t-2">
-                        <div className="flex items-center mt-2">
-                            <FontAwesomeIcon
-                                icon={faCreditCard}
-                                className="text-xl m-2"
-                            />
-                            <p className="text-sm">
-                                Your Cards{" "}
-                                <span className="text-gray-500">
-                                    (to subscribe)
-                                </span>
-                            </p>
-                        </div>
-                        <div className="flex items-center mt-2">
-                            <FontAwesomeIcon
-                                icon={faUniversity}
-                                className="text-xl m-2"
-                            />
-                            <p className="text-sm">
-                                Add Bank{" "}
-                                <span className="text-gray-500">(to earn)</span>
-                            </p>
-                        </div>
-                    </div>
-                    */}
+                            <div className="mt-5 border-t-2">
+                                <Link href="/my/payments">
+                                    <div className="flex items-center mt-2">
+                                        <FontAwesomeIcon
+                                            icon={faCreditCard}
+                                            className="text-xl m-2"
+                                        />
+                                        <p className="text-sm">
+                                            Your Cards{" "}
+                                            <span className="text-gray-500">
+                                                (to subscribe)
+                                            </span>
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link href="/my/payout">
+                                    <div className="flex items-center mt-2">
+                                        <FontAwesomeIcon
+                                            icon={faUniversity}
+                                            className="text-xl m-2"
+                                        />
+                                        <p className="text-sm">
+                                            Add payout{" "}
+                                            <span className="text-gray-500">
+                                                (to earn)
+                                            </span>
+                                        </p>
+                                    </div>
+                                </Link>
+                            </div>
                             <div className="mt-5 border-t-2">
                                 <div className="flex items-center mt-2">
                                     <FontAwesomeIcon
