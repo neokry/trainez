@@ -21,7 +21,8 @@ function IndexPage() {
             <div className="md:flex md:justify-start">
                 <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
                     <img
-                        src="landingImage.jpg"
+                        src="/landingImage.jpg"
+                        alt="landing image"
                         className="h-40 w-40 md:h-screen md:w-full object-top object-cover rounded-full md:rounded-md"
                     />
                 </div>

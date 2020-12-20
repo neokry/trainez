@@ -18,13 +18,16 @@ export default function Signup({ showTitle }) {
             }
         } catch (err) {
             console.log(err.code);
-            if (
-                err.code == "auth/wrong-password" ||
-                err.code == "auth/user-not-found"
-            ) {
-                setError("Wrong email or password");
-            } else {
-                setError("An unexpected error has occured");
+            switch (err.code) {
+                case "auth/wrong-password":
+                case "auth/user-not-found":
+                    setError("Wrong email or password");
+                    break;
+                case "auth/email-already-in-use":
+                    setError("This email is already registered");
+                    break;
+                default:
+                    setError("An unexpected error has occured");
             }
         }
     };

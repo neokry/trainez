@@ -4,6 +4,7 @@ import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
 import { useRouter } from "next/router";
 import firebase from "firebase";
+import useStripe from "./useStripe";
 
 const authContext = createContext();
 
@@ -21,6 +22,7 @@ function useProvideAuth() {
     const stream = useStream();
     const fire = useFirebase();
     const router = useRouter();
+    const stripe = useStripe();
 
     const signin = async (email, password) => {
         try {
@@ -53,22 +55,16 @@ function useProvideAuth() {
             const success = await stream.getStreamToken(usr.uid);
 
             if (success) {
-                console.log("got token");
                 const num = Math.floor(Math.random() * 100000000);
                 const username = "u" + num;
-
-                console.log(
-                    "setting username " + username + " displayname: " + name
-                );
                 await stream.updateUser({
                     userName: username,
                     name: name,
                 });
-
                 await fire.createMemberCode(usr.uid);
-                firebase.analytics().logEvent("sign_up", { method: "email" });
+                await stripe.createAccount(usr.uid, email);
 
-                console.log("user created");
+                firebase.analytics().logEvent("sign_up", { method: "email" });
             }
         } catch (err) {
             console.log("Error signing up " + err);
