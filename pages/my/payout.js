@@ -4,21 +4,24 @@ import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useAuth } from "../../hooks/useAuth";
 import Loading from "../../components/loading";
 import { useEffect, useState } from "react";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 export default function Payout() {
     const req = useRequireAuth();
     const auth = useAuth();
     const stripe = useStripe();
-    const isLinked = useState(false);
+    const [isLinked, setIsLinked] = useState(null);
 
     useEffect(() => {
         if (!auth.user?.uid) return;
         checkIsLinked(auth.user?.uid);
-    }, stripe);
+    }, [auth.user]);
 
     const checkIsLinked = async (userId) => {
         const account = await stripe.getAccount(userId);
-        isLinked(account.details_submitted);
+        if (account?.details_submitted !== null)
+            setIsLinked(account?.details_submitted);
+        else setIsLinked(false);
     };
 
     const handleClick = async (e) => {
@@ -49,19 +52,30 @@ export default function Payout() {
                     <p className="text-gray-600">Stripe</p>
                 </div>
                 <div>
-                    {isLinked ? (
-                        <p>Linked!</p>
-                    ) : (
-                        <button type="button" onClick={handleClick}>
-                            <img
-                                alt="connect with stripe"
-                                src="/stripeButton.png"
-                                className="object-contain w-40"
-                            />
-                        </button>
-                    )}
+                    <StripeButton
+                        isLinked={isLinked}
+                        handleClick={handleClick}
+                    />
                 </div>
             </div>
         </Layout>
     );
+}
+
+function StripeButton({ isLinked, handleClick }) {
+    if (isLinked === null) {
+        return null;
+    } else if (isLinked === true) {
+        return <p className="text-green-600">Linked!</p>;
+    } else {
+        return (
+            <button type="button" onClick={handleClick}>
+                <img
+                    alt="connect with stripe"
+                    src="/stripeButton.png"
+                    className="object-contain w-40"
+                />
+            </button>
+        );
+    }
 }

@@ -12,30 +12,30 @@ export default function useStripe() {
                 body: JSON.stringify(connectAcount),
             });
             const json = await response.json();
-            if (json.id) updateStripeId(userId, json.id);
+            if (json.id) updateAccountId(userId, json.id);
         } catch (err) {
             console.log("Error creating stripe account " + err);
         }
     };
 
-    const updateStripeId = async (userId, stripeId) => {
+    const updateAccountId = async (userId, stripeId) => {
         try {
             await projectFirestore
-                .collection("stripeIds")
+                .collection("stripeInfo")
                 .doc(userId)
-                .set({ stripeId: stripeId });
+                .set({ accountId: stripeId });
         } catch (err) {
             console.log("Error updating stripe id ", err);
         }
     };
 
-    const getStripeId = async (userId) => {
+    const getAccountId = async (userId) => {
         try {
             const doc = await projectFirestore
-                .collection("stripeIds")
+                .collection("stripeInfo")
                 .doc(userId)
                 .get();
-            return doc.data()?.stripeId;
+            return doc.data()?.accountId;
         } catch (err) {
             console.log("Error getting stripe id " + err);
         }
@@ -43,7 +43,7 @@ export default function useStripe() {
 
     const linkAccount = async (userId) => {
         const url = window.location.href;
-        const stripeId = await getStripeId(userId);
+        const stripeId = await getAccountId(userId);
         if (!stripeId) return false;
 
         const linkReq = {
@@ -69,10 +69,10 @@ export default function useStripe() {
     };
 
     const getAccount = async (userId) => {
-        const stripeId = await getStripeId(userId);
-        if (!stripeId) return false;
+        const accountId = await getAccountId(userId);
+        if (!accountId) return false;
 
-        const res = await fetch(`/api/stream/${stripeId}/token`);
+        const res = await fetch(`/api/stripe/accounts/${accountId}/`);
         const json = await res.json();
         return json.account;
     };
