@@ -69,8 +69,6 @@ export default function menu({ user }) {
                                     </div>
                                 </Link>
                             </div>
-                            {/* 
-                            
                             <div className="mt-5 border-t-2">
                                 <Link href="/my/payments">
                                     <div className="flex items-center mt-2">
@@ -102,7 +100,6 @@ export default function menu({ user }) {
                                     </div>
                                 </Link>
                             </div>
-                            */}
                             <div className="mt-5 border-t-2">
                                 <div className="flex items-center mt-2">
                                     <FontAwesomeIcon

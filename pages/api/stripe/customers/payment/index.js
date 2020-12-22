@@ -4,29 +4,34 @@ const stripe = require("stripe")(
 
 export default async function Create(req, res) {
     if (req.method === "POST") {
-        if (!req.body) res.status(400).end("No user sent");
+        if (!req.body) res.status(400).end("No data sent");
         else {
-            const user = req.body;
-            user.type = "express";
+            const paymentAttachment = req.body;
             console.log(
-                "creating stripe account with user: " + JSON.stringify(user)
+                "creating a new payment attachemnt: " +
+                    JSON.stringify(paymentAttachment)
             );
 
             try {
-                const account = await stripe.accounts.create(user);
+                await stripe.paymentMethods.attach(paymentAttachment.method, {
+                    customer: paymentAttachment.customer,
+                });
 
-                console.log("stripe account created " + account.id);
+                await stripe.customers.update(paymentAttachment.customer, {
+                    invoice_settings: {
+                        default_payment_method: paymentAttachment.method,
+                    },
+                });
 
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify({ id: account.id }));
+                res.end();
             } catch (err) {
                 console.log("Error creating stripe account " + err);
                 throw err;
             }
         }
     } else {
-        res.setHeader("Allow", "POST");
         res.status(405).end("Method Not Allowed");
     }
 }

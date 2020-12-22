@@ -1,5 +1,5 @@
 import Layout from "../../components/layout";
-import useStripe from "../../hooks/useStripe";
+import useMyStripe from "../../hooks/useMyStripe";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useAuth } from "../../hooks/useAuth";
 import Loading from "../../components/loading";
@@ -9,7 +9,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 export default function Payout() {
     const req = useRequireAuth();
     const auth = useAuth();
-    const stripe = useStripe();
+    const stripe = useMyStripe();
     const [isLinked, setIsLinked] = useState(null);
 
     useEffect(() => {
@@ -49,7 +49,9 @@ export default function Payout() {
             </div>
             <div className="flex p-5 py-10">
                 <div className="mr-10">
-                    <p className="text-gray-600">Stripe</p>
+                    {isLinked !== null && (
+                        <p className="text-gray-600">Stripe</p>
+                    )}
                 </div>
                 <div>
                     <StripeButton

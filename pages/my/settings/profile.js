@@ -9,11 +9,17 @@ import ProfilePicture from "../../../components/profilePicture";
 import { useFirebase } from "../../../hooks/useFirebase";
 import { layer } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShare, faShareSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+    faChevronRight,
+    faShare,
+    faShareSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
 
 export default function Profile() {
     const stream = useStream();
     const fire = useFirebase();
+    const router = useRouter();
     const { register, handleSubmit, reset, getValues, errors } = useForm();
     const [profileImg, setProfileImg] = useState(false);
     const [userName, setUserName] = useState("");
@@ -52,6 +58,11 @@ export default function Profile() {
         setIsSaved(result);
     };
 
+    const onSubscriptionClick = (e) => {
+        e.preventDefault();
+        router.push("subscription");
+    };
+
     const copyToClipboard = (e) => {
         e.preventDefault();
         navigator.clipboard.writeText(memberCode);
@@ -76,80 +87,106 @@ export default function Profile() {
     }
 
     return (
-        <Layout>
-            <div>
-                <h1 className="font-bold border-b-2 text-2xl text-gray-700">
-                    Edit Profile
-                </h1>
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Layout>
+                <div className="border-b-2 text-2xl pb-5">
+                    <div className="md:w-1/2 flex justify-between items-center">
+                        <h1 className="font-bold text-gray-700">
+                            Edit Profile
+                        </h1>
+                        <button
+                            type="submit"
+                            className="w-20 p-2 text-sm bg-green-500 rounded-full text-white"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="md:w-1/2">
-                <label className="flex items-left w-24 mt-4">
-                    <input
-                        type="file"
-                        className="invisible z-30 absolute"
-                        id="myFile"
-                        ref={register}
-                        onChange={imgPreview}
-                        name="profileImageFile"
-                    />
+                <div className="md:w-1/2 ">
+                    <label className="flex items-left w-24 mt-4">
+                        <input
+                            type="file"
+                            className="invisible z-30 absolute"
+                            id="myFile"
+                            ref={register}
+                            onChange={imgPreview}
+                            name="profileImageFile"
+                        />
 
-                    <ProfilePicture
-                        displayName={userName}
-                        profileImg={profileImg}
-                        isSmall={false}
-                        isEditable={true}
-                    />
-                </label>
-                <div className="mt-4">
-                    <p>Username</p>
-                    <input
-                        type="text"
-                        className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="Username"
-                        name="userName"
-                        ref={register({
-                            validate: async (value) =>
-                                await validateUsername(value),
-                        })}
-                    ></input>
-                    {errors.userName && (
-                        <p className="text-red-400">
-                            Username is not availible.
-                        </p>
-                    )}
-                </div>
-                <div className="mt-4">
-                    <p>Display name</p>
-                    <input
-                        type="text"
-                        className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="DisplayName"
-                        ref={register}
-                        name="name"
-                    ></input>
-                </div>
-                <div className="mt-4">
-                    <p>Bio</p>
-                    <textarea
-                        className="border-gray-400 border-2 rounded-md w-full h-20 p-2"
-                        placeholder="Bio"
-                        ref={register}
-                        rows="2"
-                        name="bio"
-                    />
-                </div>
-                <div className="mt-4">
-                    <p>Website URL</p>
-                    <input
-                        type="text"
-                        className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                        placeholder="Website URL"
-                        ref={register}
-                        name="url"
-                    ></input>
-                </div>
-                {memberCode && (
+                        <ProfilePicture
+                            displayName={userName}
+                            profileImg={profileImg}
+                            isSmall={false}
+                            isEditable={true}
+                        />
+                    </label>
+                    <div className="mt-4">
+                        <p className="text-gray-600">Username</p>
+                        <input
+                            type="text"
+                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                            placeholder="Username"
+                            name="userName"
+                            ref={register({
+                                validate: async (value) =>
+                                    await validateUsername(value),
+                            })}
+                        ></input>
+                        {errors.userName && (
+                            <p className="text-red-400">
+                                Username is not availible.
+                            </p>
+                        )}
+                    </div>
+                    <div className="mt-4">
+                        <p className="text-gray-600">Display name</p>
+                        <input
+                            type="text"
+                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                            placeholder="DisplayName"
+                            ref={register}
+                            name="name"
+                        ></input>
+                    </div>
+                    <div className="mt-4">
+                        <p className="text-gray-600">Bio</p>
+                        <textarea
+                            className="border-gray-400 border-2 rounded-md w-full h-20 p-2"
+                            placeholder="Bio"
+                            ref={register}
+                            rows="2"
+                            name="bio"
+                        />
+                    </div>
+                    <div className="mt-4">
+                        <p className="text-gray-600">Website URL</p>
+                        <input
+                            type="text"
+                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                            placeholder="Website URL"
+                            ref={register}
+                            name="url"
+                        ></input>
+                    </div>
+                    <div className="mt-6">
+                        <p className="text-gray-600">Subscription</p>
+                        <div className="border-gray-400 border-t border-b rounded-md w-full h-10 p-2 mt-2">
+                            <button
+                                className="text-gray-700 w-full"
+                                onClick={onSubscriptionClick}
+                            >
+                                <div className="flex justify-between pr-3">
+                                    <p>Subscription Pricing</p>
+                                    <FontAwesomeIcon
+                                        className="text-xl text-gray-500"
+                                        icon={faChevronRight}
+                                    />
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    {/* memberCode && (
                     <>
                         <div className="mt-4 flex items-baseline">
                             <p className="mr-2">Member Code:</p>
@@ -167,7 +204,7 @@ export default function Profile() {
                             </button>
                         </div>
                         {showCopiedText && (
-                            <p class="text-md text-green-600">
+                            <p className="text-md text-green-600">
                                 Copied member code to clipboard!
                             </p>
                         )}
@@ -175,17 +212,15 @@ export default function Profile() {
                             (Gives members access to your paid content)
                         </p>
                     </>
-                )}
+                ) */}
 
-                <button
-                    type="submit"
-                    className="w-full p-2 bg-green-500 rounded-md text-white shadow-sm mt-4"
-                >
-                    Save
-                </button>
-            </form>
-
-            {isSaved && <p class="text-md text-green-600">Settings saved!</p>}
-        </Layout>
+                    {isSaved && (
+                        <p className="text-md text-green-600">
+                            Settings saved!
+                        </p>
+                    )}
+                </div>
+            </Layout>
+        </form>
     );
 }

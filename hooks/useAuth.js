@@ -4,7 +4,7 @@ import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
 import { useRouter } from "next/router";
 import firebase from "firebase";
-import useStripe from "./useStripe";
+import useMyStripe from "./useMyStripe";
 
 const authContext = createContext();
 
@@ -22,7 +22,7 @@ function useProvideAuth() {
     const stream = useStream();
     const fire = useFirebase();
     const router = useRouter();
-    const stripe = useStripe();
+    const stripe = useMyStripe();
 
     const signin = async (email, password) => {
         try {
@@ -62,7 +62,7 @@ function useProvideAuth() {
                     name: name,
                 });
                 await fire.createMemberCode(usr.uid);
-                await stripe.createAccount(usr.uid, email);
+                await stripe.setupStripe(usr.uid, email);
 
                 firebase.analytics().logEvent("sign_up", { method: "email" });
             }
