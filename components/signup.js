@@ -37,8 +37,16 @@ export default function Signup({ showTitle }) {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col px-8 text-center"
         >
-            {showTitle && <h1 className="font-bold text-2xl">Train EZ</h1>}
-            <div className="mt-10 flex flex-col">
+            {showTitle && (
+                <div
+                    animate={{ scale: 1.5 }}
+                    transition={{ duration: 3 }}
+                    className="flex items-center justify-around text-4xl md:text-5xl font-thin text-green-500"
+                >
+                    <div>train ez</div>
+                </div>
+            )}
+            <div className="mt-10 md:mt-5 flex flex-col">
                 <input
                     className="bg-gray-200 py-2 px-5 rounded-md"
                     placeholder="E-mail"

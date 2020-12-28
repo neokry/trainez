@@ -31,7 +31,7 @@ export function UserActivity({ props }) {
                 onClickUser={onClickUser}
                 {...props}
                 Footer={() => (
-                    <div>
+                    <div className="mt-3">
                         <div className="flex items-baseline justify-between pr-2">
                             <div className="mr-2">
                                 <LikeButton {...props} />

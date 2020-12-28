@@ -6,6 +6,7 @@ import Loading from "../../../components/loading";
 import { useAuth } from "../../../hooks/useAuth";
 import useMyStripe from "../../../hooks/useMyStripe";
 import { useRequireAuth } from "../../../hooks/useRequireAuth";
+import { useStream } from "../../../hooks/useStream";
 
 export default function Subscription() {
     const stripe = useMyStripe();
@@ -20,6 +21,7 @@ export default function Subscription() {
     }, [auth.user]);
 
     const checkIsLinked = async () => {
+        console.log("check is linked");
         const account = await stripe.getAccount(auth.user.uid);
         if (account?.details_submitted !== null)
             setIsLinked(account?.details_submitted);
@@ -28,6 +30,10 @@ export default function Subscription() {
 
     if (!req) {
         return <Loading />;
+    }
+
+    if (isLinked === null) {
+        return <Layout></Layout>;
     }
 
     return (
@@ -88,6 +94,7 @@ function SubscriptionForm() {
     const stripe = useMyStripe();
     const auth = useAuth();
     const [isSaved, setIsSaved] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         if (auth.user?.uid) {
@@ -97,6 +104,7 @@ function SubscriptionForm() {
 
     const getPrice = async () => {
         const price = await stripe.getSubscriptionPrice(auth.user.uid);
+        setIsLoaded(true);
         if (price.unit_amount) setValue("price", price.unit_amount * 0.01);
     };
 
@@ -108,6 +116,10 @@ function SubscriptionForm() {
         );
         if (res) setIsSaved(true);
     };
+
+    if (!isLoaded) {
+        return <div></div>;
+    }
 
     return (
         <div className="mt-5 md:w-1/2">

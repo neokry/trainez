@@ -16,24 +16,26 @@ export default function UserCard({ user, onConfirm }) {
                     <p className="text-gray-600 text-sm">@{user.userName}</p>
                 </div>
             </div>
-            <div className="mt-5 flex items-center justify-around">
-                {user.status === "active" ? (
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onConfirm(user);
-                        }}
-                        className="border border-green-500 text-green-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none"
-                    >
-                        Subscribed For {user.price ?? "FREE"}{" "}
-                        {user.price && "$ (PER MONTH)"}
-                    </button>
-                ) : (
-                    <div className="border border-gray-500 text-gray-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none">
-                        <p>UNSUBSCRIBED</p>
-                    </div>
-                )}
-            </div>
+            {onConfirm && (
+                <div className="mt-5 flex items-center justify-around">
+                    {user.status === "active" ? (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onConfirm(user);
+                            }}
+                            className="border border-green-500 text-green-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none"
+                        >
+                            Subscribed For {user.price ?? "FREE"}{" "}
+                            {user.price && "$ (PER MONTH)"}
+                        </button>
+                    ) : (
+                        <div className="border border-gray-500 text-gray-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none">
+                            <p>UNSUBSCRIBED</p>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

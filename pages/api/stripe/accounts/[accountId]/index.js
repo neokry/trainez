@@ -6,7 +6,6 @@ export default async function Account(req, res) {
     } = req;
 
     const account = await stripe.accounts.retrieve(accountId);
-    console.log("account info", JSON.stringify(account));
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");

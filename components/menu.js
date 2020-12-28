@@ -51,9 +51,11 @@ export default function menu({ user, followingStats }) {
                                 </p>
                             </div>
                             <div className="mt-2 flex text-sm">
-                                <button type="button" className="mr-1">
-                                    {followingStats.followers} Fans
-                                </button>
+                                <Link href="/my/subscribers">
+                                    <button type="button" className="mr-1">
+                                        {followingStats.followers} Fans
+                                    </button>
+                                </Link>
                                 {" - "}
                                 <Link href="/my/subscriptions">
                                     <button type="button" className="ml-1">

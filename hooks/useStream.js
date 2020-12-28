@@ -141,7 +141,7 @@ function useProvideStream() {
 
     const getFollowing = async () => {
         const client = getClient();
-        const feed = client.feed("timeline", client.currentUser.id);
+        const feed = client.feed("timeline", currentUser.id);
 
         const following = await feed.following();
 
@@ -151,11 +151,38 @@ function useProvideStream() {
             return split[1];
         });
 
-        const info = stripe.getStripeInfo(currentUser.id);
+        const info = await stripe.getStripeInfo(currentUser.id);
 
         const usersReq = {
             userIds: userIds,
             customerId: info.customerId,
+        };
+
+        const res = await fetch(`/api/stream/users/details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(usersReq),
+        });
+
+        return await res.json();
+    };
+
+    const getFollowers = async () => {
+        const client = getClient();
+        const feed = client.feed("user", client.currentUser.id);
+
+        const followers = await feed.followers();
+
+        const userIds = followers.results.map((follow) => {
+            const feedId = follow.feed_id;
+            const split = feedId.split(":");
+            return split[1];
+        });
+
+        const usersReq = {
+            userIds: userIds,
         };
 
         const res = await fetch(`/api/stream/users/details`, {
@@ -188,6 +215,7 @@ function useProvideStream() {
         unfollowUser,
         isFollowing,
         getFollowing,
+        getFollowers,
         getFollowingStats,
     };
 }

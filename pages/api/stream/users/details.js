@@ -20,38 +20,52 @@ export default async function UserDetails(req, res) {
                 userGroup.push(client.user(userId).get());
             });
 
-            const subs = await stripe.subscriptions.list({
-                customer: usersReq.customerId,
-                status: "all",
-            });
-
-            console.log(subs);
+            let subs = false;
+            if (usersReq.customerId) {
+                subs = await stripe.subscriptions.list({
+                    customer: usersReq.customerId,
+                    status: "all",
+                });
+            }
 
             const results = await Promise.all(userGroup);
 
-            const usersRes = results.map((result) => {
-                const subInfo = subs.data.find((sub) => {
-                    return result.id === sub.metadata["creatorId"];
-                });
+            let usersRes = false;
 
-                if (subInfo) {
-                    const price = subInfo.items.data[0].price?.unit_amount;
-                    const amount = (price ?? 0) * 0.01;
-                    return {
-                        ...result.data,
-                        id: result.id,
-                        price: amount,
-                        status: subInfo.status,
-                    };
-                } else {
+            if (!usersReq.customerId) {
+                usersRes = results.map((result) => {
                     return {
                         ...result.data,
                         id: result.id,
                         price: null,
                         status: "active",
                     };
-                }
-            });
+                });
+            } else {
+                usersRes = results.map((result) => {
+                    const subInfo = subs.data.find((sub) => {
+                        return result.id === sub.metadata["creatorId"];
+                    });
+
+                    if (subInfo) {
+                        const price = subInfo.items.data[0].price?.unit_amount;
+                        const amount = (price ?? 0) * 0.01;
+                        return {
+                            ...result.data,
+                            id: result.id,
+                            price: amount,
+                            status: subInfo.status,
+                        };
+                    } else {
+                        return {
+                            ...result.data,
+                            id: result.id,
+                            price: null,
+                            status: "active",
+                        };
+                    }
+                });
+            }
 
             res.statusCode = 200;
             res.setHeader("Content-Type", "application/json");
