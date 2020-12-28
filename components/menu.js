@@ -11,8 +11,9 @@ import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
 import ProfilePicture from "./profilePicture";
 
-export default function menu({ user }) {
+export default function menu({ user, followingStats }) {
     const auth = useAuth();
+    console.log("stats", followingStats);
 
     const signoutClick = (e) => {
         e.preventDefault();
@@ -48,6 +49,17 @@ export default function menu({ user }) {
                                 <p className="text-gray-500 text-sm">
                                     @{user.userName}
                                 </p>
+                            </div>
+                            <div className="mt-2 flex text-sm">
+                                <button type="button" className="mr-1">
+                                    {followingStats.followers} Fans
+                                </button>
+                                {" - "}
+                                <Link href="/my/subscriptions">
+                                    <button type="button" className="ml-1">
+                                        {followingStats.following} Following
+                                    </button>
+                                </Link>
                             </div>
                             <div className="mt-5 border-t-2">
                                 <Link href={"/" + user.userName}>

@@ -11,6 +11,7 @@ export default function Payout() {
     const auth = useAuth();
     const stripe = useMyStripe();
     const [isLinked, setIsLinked] = useState(null);
+    const [canPayout, setCanPayout] = useState(null);
 
     useEffect(() => {
         if (!auth.user?.uid) return;
@@ -19,9 +20,9 @@ export default function Payout() {
 
     const checkIsLinked = async (userId) => {
         const account = await stripe.getAccount(userId);
-        if (account?.details_submitted !== null)
-            setIsLinked(account?.details_submitted);
-        else setIsLinked(false);
+        setIsLinked(account.details_submitted ?? false);
+        if (account.details_submitted ?? false)
+            setCanPayout(account.payouts_enabled ?? false);
     };
 
     const handleClick = async (e) => {
@@ -29,6 +30,13 @@ export default function Payout() {
         if (!auth.user?.uid) return;
         const url = await stripe.linkAccount(auth.user.uid);
         if (url) window.location.href = url;
+    };
+
+    const handleDashboard = async (e) => {
+        e.preventDefault();
+        if (!auth.user?.uid) return;
+        const url = await stripe.getDashboardLink(auth.user.uid);
+        if (url) window.open(url, "_blank");
     };
 
     if (!req) {
@@ -44,10 +52,30 @@ export default function Payout() {
                 <p className="text-gray-600 md:w-2/3">
                     Just like a real paycheck, your account balance is deposited
                     to your stripe account. Turn things on by connecting or
-                    creating your stripe account below.
+                    creating your stripe account below.{" "}
+                    {(() => {
+                        switch (canPayout) {
+                            case true:
+                                return (
+                                    <span className="text-green-500">
+                                        You're ready to recieve payouts!
+                                    </span>
+                                );
+                            case false:
+                                return (
+                                    <span className="text-red-500">
+                                        Your account it still missing some
+                                        information check the dashboard for more
+                                        details.
+                                    </span>
+                                );
+                            default:
+                                return null;
+                        }
+                    })()}
                 </p>
             </div>
-            <div className="flex p-5 py-10">
+            <div className="flex items-center p-5 py-10">
                 <div className="mr-10">
                     {isLinked !== null && (
                         <p className="text-gray-600">Stripe</p>
@@ -57,6 +85,7 @@ export default function Payout() {
                     <StripeButton
                         isLinked={isLinked}
                         handleClick={handleClick}
+                        handleDashboard={handleDashboard}
                     />
                 </div>
             </div>
@@ -64,18 +93,26 @@ export default function Payout() {
     );
 }
 
-function StripeButton({ isLinked, handleClick }) {
+function StripeButton({ isLinked, handleClick, handleDashboard }) {
     if (isLinked === null) {
         return null;
     } else if (isLinked === true) {
-        return <p className="text-green-600">Linked!</p>;
+        return (
+            <button
+                className="border text-sm text-green-500 border-green-500 rounded-md p-2 outline-none focus:outline-none"
+                type="button"
+                onClick={handleDashboard}
+            >
+                View My Dashboard
+            </button>
+        );
     } else {
         return (
             <button type="button" onClick={handleClick}>
                 <img
                     alt="connect with stripe"
                     src="/stripeButton.png"
-                    className="object-contain w-40"
+                    className="object-contain w-40 outline-none focus:outline-none"
                 />
             </button>
         );

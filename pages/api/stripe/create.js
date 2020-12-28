@@ -1,6 +1,4 @@
-const stripe = require("stripe")(
-    "sk_test_51HtG6uFc6WEwdah2bAN2a3POHM0XCOq3fQhC4D8Mm2MWPXM1c43QXv7niSkjkEaMGfISp5tNoP1mHWQ6QwZkBXBq008c71THGp"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 export default async function Create(req, res) {
     if (req.method === "POST") {
@@ -8,13 +6,16 @@ export default async function Create(req, res) {
         else {
             const user = req.body;
             user.type = "express";
-            console.log(
-                "creating stripe account with user: " + JSON.stringify(user)
-            );
+            user.capabilities = {
+                card_payments: { requested: true },
+                transfers: { requested: true },
+            };
 
             try {
                 const account = await stripe.accounts.create(user);
                 const customer = await stripe.customers.create();
+
+                console.log("account response", JSON.stringify(account));
 
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");

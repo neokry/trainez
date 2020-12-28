@@ -9,14 +9,22 @@ import Loading from "./loading";
 function Layout(props) {
     const [showMenu, setShowMenu] = useState(false);
     const [user, setUser] = useState(false);
+    const [followingStats, setFollowingStats] = useState(false);
     const stream = useStream();
 
     useEffect(() => {
-        if (stream.currentUser?.data !== null) {
+        console.log("User: " + stream.currentUser?.data);
+        if (stream.currentUser !== null) {
             const user = stream.currentUser?.data;
+            getFollowingStats();
             setUser(user);
         }
-    }, [stream.currentUser?.data]);
+    }, [stream.currentUser]);
+
+    const getFollowingStats = async (e) => {
+        const stats = await stream.getFollowingStats();
+        if (stats) setFollowingStats(stats);
+    };
 
     const menuClick = (e) => {
         e.preventDefault();
@@ -41,7 +49,7 @@ function Layout(props) {
                             onClick={backdropClick}
                             className="fixed h-screen w-screen top-0 left-0 z-10 bg-gray-900 bg-opacity-50 backdrop"
                         >
-                            <Menu user={user} />
+                            <Menu user={user} followingStats={followingStats} />
                         </motion.div>
                     )}
                 </AnimatePresence>

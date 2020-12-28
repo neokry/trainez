@@ -1,6 +1,4 @@
-const stripe = require("stripe")(
-    "sk_test_51HtG6uFc6WEwdah2bAN2a3POHM0XCOq3fQhC4D8Mm2MWPXM1c43QXv7niSkjkEaMGfISp5tNoP1mHWQ6QwZkBXBq008c71THGp"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 export default async function Account(req, res) {
     const {
@@ -8,6 +6,7 @@ export default async function Account(req, res) {
     } = req;
 
     const account = await stripe.accounts.retrieve(accountId);
+    console.log("account info", JSON.stringify(account));
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");

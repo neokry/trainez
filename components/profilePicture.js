@@ -4,7 +4,7 @@ export default function ProfilePicture({
     isSmall,
     isEditable,
 }) {
-    const initial = displayName.charAt(0);
+    const initial = displayName?.charAt(0);
 
     return (
         <div className="items-center flex justify-around ">

@@ -19,60 +19,76 @@ import Signup from "../components/signup";
 import Loading from "../components/loading";
 import ProfilePicture from "../components/profilePicture";
 import { motion } from "framer-motion";
+import useMyStripe from "../hooks/useMyStripe";
 
 export default function User() {
     const router = useRouter();
-    const auth = useAuth();
     const fire = useFirebase();
     const stream = useStream();
+    const stripe = useMyStripe();
+    const auth = useAuth();
 
     const [user, setUser] = useState(false);
-    const [userId, setUserId] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
     const [showSignIn, setShowSignIn] = useState(false);
     const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
     const [showLinkNotification, setShowLinkNotification] = useState(false);
+    const [hasPaymentMethods, setHasPaymentMethods] = useState(false);
+    const [subPrice, setSubPrice] = useState(false);
 
-    const { username } = router.query;
+    const { username, payment } = router.query;
 
+    //Page Load
     useEffect(() => {
-        if (username) initPage(username);
+        if (username) initPage();
     }, [username]);
 
+    //Show subscribe modal if user logs in
     useEffect(() => {
-        if (
-            stream.currentUser?.id &&
-            userId &&
-            userId == stream.currentUser?.id
-        )
-            setIsCurrentUser(true);
-    }, [stream.currentUser, userId]);
-
-    useEffect(() => {
-        if (showSignIn) {
-            setShowSignIn(false);
-            setShowSubscribeModal(true);
-        }
+        if (stream.currentUser) returnFromSignin();
     }, [stream.currentUser]);
 
-    const initPage = async (_username) => {
+    //Initilize page with user data
+    const initPage = async () => {
         try {
             setUser(false);
-            setUserId(false);
             setIsFollowing(false);
             setIsCurrentUser(false);
+            setHasPaymentMethods(false);
+            setSubPrice(false);
 
-            const userIdResult = await fire.getUserIdFromName(_username);
-            setUserId(userIdResult);
-
+            const userIdResult = await fire.getUserIdFromName(username);
             const isFollowingResult = await stream.isFollowing(userIdResult);
-            setIsFollowing(isFollowingResult);
-
             const userResult = await stream.getUser(userIdResult);
-            setUser(userResult?.data);
+            const subPriceResult = await stripe.getSubscriptionPrice(
+                userIdResult
+            );
+            if (subPriceResult) setSubPrice(subPriceResult?.unit_amount * 0.01);
+
+            if (userIdResult == stream.currentUser?.id) {
+                setIsCurrentUser(true);
+            }
+
+            setIsFollowing(isFollowingResult);
+            setUser({ ...userResult?.data, id: userResult.id });
         } catch (err) {
             console.log("Error loading page " + err);
+        }
+    };
+
+    const returnFromSignin = async () => {
+        const result = await stripe.getPaymentMethods(stream.currentUser?.id);
+        if (result) setHasPaymentMethods(result.data?.length ?? false);
+
+        if (showSignIn && stream.currentUser?.id) {
+            setShowSignIn(false);
+            if (user?.id != stream.currentUser?.id) setShowSubscribeModal(true);
+            else setIsCurrentUser(true);
+        }
+
+        if (user?.id == stream.currentUser?.id) {
+            setIsCurrentUser(true);
         }
     };
 
@@ -82,22 +98,54 @@ export default function User() {
         else setShowSubscribeModal(true);
     };
 
-    const subscribe = async (memberCode) => {
-        const isValid = await fire.isMemberCodeValid(userId, memberCode);
-        if (isValid) {
-            const res = await stream.followUser(userId);
-            if (res) {
-                setShowSubscribeModal(false);
-                setIsFollowing(true);
-            }
-        }
-    };
+    if (!user) return <Loading />;
+    else if (showSignIn)
+        return <SignupScreen user={user} setShowSignIn={setShowSignIn} />;
 
-    const backClick = (e) => {
-        e.preventDefault();
-        setShowSignIn(false);
-    };
+    //Public profile
+    return (
+        <>
+            {showLinkNotification && <LinkNotification />}
+            {showSubscribeModal && (
+                <SubscribeModal
+                    user={user}
+                    setShowSubscribeModal={setShowSubscribeModal}
+                    setIsFollowing={setIsFollowing}
+                    hasPaymentMethods={hasPaymentMethods}
+                    subPrice={subPrice}
+                />
+            )}
+            <Layout>
+                <div className="md:w-3/4">
+                    <UserHeader
+                        user={user}
+                        isCurrentUser={isCurrentUser}
+                        setShowLinkNotification={setShowLinkNotification}
+                        subPrice={subPrice}
+                        subscribeClick={subscribeClick}
+                        isFollowing={isFollowing}
+                    />
+                    <div className="border-t-2 mt-10">
+                        {isFollowing || isCurrentUser ? (
+                            <UserFeed userId={user.id}></UserFeed>
+                        ) : (
+                            <LockedUserFeed subscribeClick={subscribeClick} />
+                        )}
+                    </div>
+                </div>
+            </Layout>
+        </>
+    );
+}
 
+function UserHeader({
+    user,
+    isCurrentUser,
+    setShowLinkNotification,
+    subPrice,
+    subscribeClick,
+    isFollowing,
+}) {
     const copyToClipboard = (e) => {
         e.preventDefault();
         navigator.clipboard.writeText(window.location.href);
@@ -108,127 +156,148 @@ export default function User() {
         }, 3000);
     };
 
-    if (!user) return <Loading />;
-
-    //Signup modal
-    if (showSignIn)
-        return (
-            <div className="px-2">
-                <div className="mt-4 flex items-center">
-                    <button onClick={backClick}>
-                        <FontAwesomeIcon
-                            icon={faArrowLeft}
-                            className="mr-4 text-xl text-gray-800"
-                        />
-                    </button>
-                    <h1 className="text-sm">LOGIN TO SUBSCRIBE</h1>
-                </div>
-
-                <SubscribeDetails user={user} />
-
-                <div className="w-full">
-                    <Signup />
-                </div>
-            </div>
-        );
-
-    //Public profile
     return (
         <>
-            {showLinkNotification && <LinkNotification />}
-            {showSubscribeModal && (
-                <SubscribeModal
-                    user={user}
-                    setShowSubscribeModal={setShowSubscribeModal}
-                    subscribe={subscribe}
+            <div className="flex justify-between items-stretch">
+                <ProfilePicture
+                    displayName={user.name}
+                    profileImg={user.profileImage}
+                    isSmall={false}
                 />
-            )}
-            <Layout>
-                <div className="md:w-3/4">
-                    <div className="flex justify-between items-stretch">
-                        <ProfilePicture
-                            displayName={user.name}
-                            profileImg={user.profileImage}
-                            isSmall={false}
-                        />
-                        <div>
-                            {isCurrentUser && (
-                                <div className="flex items-center">
-                                    <Link href="/my/settings/profile">
-                                        <div className="w-34 px-2 mr-2 h-12 border-2 border-green-400 rounded-full text-green-400 flex items-center justify-around">
-                                            <FontAwesomeIcon
-                                                className="text-xl mr-3"
-                                                icon={faCog}
-                                            />
-                                            <a className="mr-2">Edit Profile</a>
-                                        </div>
-                                    </Link>
-                                    <button
-                                        onClick={copyToClipboard}
-                                        className="w-12 h-12 border-2 border-green-400 rounded-full text-green-400 text-xl"
-                                    >
-                                        <FontAwesomeIcon icon={faShareSquare} />
-                                    </button>
+                <div>
+                    <div className="flex items-center">
+                        {isCurrentUser && (
+                            <Link href="/my/settings/profile">
+                                <div className="w-34 px-2 mr-2 h-12 border-2 border-green-400 rounded-full text-green-400 flex items-center justify-around">
+                                    <FontAwesomeIcon
+                                        className="text-xl mr-3"
+                                        icon={faCog}
+                                    />
+                                    <a className="mr-2">Edit Profile</a>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="mt-2">
-                        <p className="font-bold text-xl">{user.name}</p>
-                        <p className="text-gray-500 text-md">
-                            @{user.userName}
-                        </p>
-                        <p className="mt-5 text-lg">{user.bio}</p>
-                        <a
-                            href={"http://" + user.url}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            className="flex items-center mt-1"
-                        >
-                            <FontAwesomeIcon
-                                className="text-gray-500 "
-                                icon={faLink}
-                            />
-                            <p className="text-gray-500 ml-1 text-md">
-                                {user.url}
-                            </p>
-                        </a>
-                    </div>
-                    <div className="border-t-2 mt-10">
-                        {isFollowing || isCurrentUser ? (
-                            <UserFeed userId={userId}></UserFeed>
-                        ) : (
-                            <div className="mt-10 bg-gray-200 w-full h-64 rounded-lg flex justify-around items-center">
-                                <div className="mt-10 flex flex-col">
-                                    <div className="flex justify-around items-center">
-                                        {" "}
-                                        <FontAwesomeIcon
-                                            className="text-4xl text-gray-400 "
-                                            icon={faLock}
-                                        />
-                                    </div>
-                                    <div className="flex justify-around mt-10">
-                                        <button
-                                            type="button"
-                                            onClick={subscribeClick}
-                                            className="bg-green-400 text-white px-5 py-2 rounded-full"
-                                        >
-                                            SUBSCRIBE TO SEE USERS POSTS
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            </Link>
                         )}
+                        <button
+                            onClick={copyToClipboard}
+                            className="w-12 h-12 border-2 border-green-400 rounded-full text-green-400 text-xl"
+                        >
+                            <FontAwesomeIcon icon={faShareSquare} />
+                        </button>
                     </div>
                 </div>
-            </Layout>
+            </div>
+            <div className="mt-2">
+                <p className="font-bold text-xl">{user.name}</p>
+                <p className="text-gray-500 text-md">@{user.userName}</p>
+                <p className="mt-5 text-lg">{user.bio}</p>
+                <a
+                    href={"http://" + user.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="flex items-center mt-1"
+                >
+                    <FontAwesomeIcon className="text-gray-500 " icon={faLink} />
+                    <p className="text-gray-500 ml-1 text-md">{user.url}</p>
+                </a>
+            </div>
+            {!(isCurrentUser || isFollowing) && (
+                <div className="mt-4 font-semibold border border-gray-400 rounded-md w-full h-24 p-4 py-2">
+                    {subPrice ? (
+                        <p>Subscription ${subPrice} per month</p>
+                    ) : (
+                        <p>Free Subscription</p>
+                    )}
+                    <div className="flex justify-around mt-2">
+                        <button
+                            type="button"
+                            onClick={subscribeClick}
+                            className="bg-green-400 text-white w-full px-5 py-2 text-sm rounded-full"
+                        >
+                            SUBSCRIBE FOR {subPrice ? `$${subPrice}` : "FREE"}
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
 
-function SubscribeDetails({ user }) {
+function LockedUserFeed({ subscribeClick }) {
     return (
-        <div className="flex flex-col items-center mt-10">
+        <div className="mt-10 bg-gray-200 w-full h-64 rounded-lg flex justify-around items-center">
+            <div className="mt-10 flex flex-col">
+                <div className="flex justify-around items-center">
+                    {" "}
+                    <FontAwesomeIcon
+                        className="text-4xl text-gray-400 "
+                        icon={faLock}
+                    />
+                </div>
+                <div className="flex justify-around mt-10">
+                    <button
+                        type="button"
+                        onClick={subscribeClick}
+                        className="bg-green-400 text-white px-5 py-2 text-sm rounded-full"
+                    >
+                        SUBSCRIBE TO SEE USERS POSTS
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function SignupScreen({ user, setShowSignIn }) {
+    const backClick = (e) => {
+        e.preventDefault();
+        setShowSignIn(false);
+    };
+
+    return (
+        <div className="px-2 h-screen overflow-hidden">
+            <div className="mt-4 flex items-center">
+                <button onClick={backClick}>
+                    <FontAwesomeIcon
+                        icon={faArrowLeft}
+                        className="mr-4 text-xl text-gray-800"
+                    />
+                </button>
+                <h1 className="text-sm">LOGIN TO SUBSCRIBE</h1>
+            </div>
+
+            <div className="md:flex md:h-full pb-20 md:items-center">
+                <div className="w-full md:w-1/2 md:flex md:justify-end md:mr-10 lg:mr-20">
+                    <SubscribeDetails user={user} isSignup={true} />
+                </div>
+
+                <div className="w-full h-full md:w-1/2 md:flex md:justify-start">
+                    <div className="flex flex-col lg:w-3/4 items-center justify-around">
+                        <div className="w-full ">
+                            <div className="h-1/2 hidden md:flex justify-center items-baseline">
+                                <h1 className="flex items-center justify-around text-5xl font-thin text-green-500">
+                                    train ez
+                                </h1>
+                            </div>
+
+                            <div className="w-full">
+                                <Signup />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function SubscribeDetails({ user, isSignup }) {
+    return (
+        <div
+            className={`flex flex-col items-center mt-10 ${
+                isSignup &&
+                "md:border-2 md:border-gray-200 md:rounded-lg md:py-20 md:px-10"
+            }`}
+        >
             <div className="flex justify-between items-stretch">
                 <ProfilePicture
                     displayName={user.name}
@@ -274,14 +343,13 @@ function SubscribeDetails({ user }) {
     );
 }
 
-function SubscribeModal({ setShowSubscribeModal, user, subscribe }) {
-    const [memberCode, setMemberCode] = useState("");
-
-    const handleSubscribe = (e) => {
-        e.preventDefault();
-        if (memberCode !== "") subscribe(memberCode);
-    };
-
+function SubscribeModal({
+    setShowSubscribeModal,
+    setIsFollowing,
+    user,
+    hasPaymentMethods,
+    subPrice,
+}) {
     return (
         <>
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -305,19 +373,14 @@ function SubscribeModal({ setShowSubscribeModal, user, subscribe }) {
                         </div>
                         {/*body*/}
                         <div className="relative p-6 flex-auto">
-                            <SubscribeDetails user={user} />
-                            <input
-                                type="text"
-                                placeholder="Member Code"
-                                value={memberCode}
-                                onChange={(e) => setMemberCode(e.target.value)}
-                                className="border-gray-400 border-2 rounded-full w-full h-10 p-2 mt-8 outline-none focus:outline-none"
+                            <SubscribeDetails user={user} isSignup={false} />
+                            <SubscribeControl
+                                setShowSubscribeModal={setShowSubscribeModal}
+                                setIsFollowing={setIsFollowing}
+                                user={user}
+                                hasPaymentMethods={hasPaymentMethods}
+                                subPrice={subPrice}
                             />
-                            <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white">
-                                <button type="button" onClick={handleSubscribe}>
-                                    Subscribe
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -325,6 +388,138 @@ function SubscribeModal({ setShowSubscribeModal, user, subscribe }) {
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
         </>
     );
+}
+
+function SubscribeControl({
+    setShowSubscribeModal,
+    setIsFollowing,
+    user,
+    hasPaymentMethods,
+    subPrice,
+}) {
+    const fire = useFirebase();
+    const stream = useStream();
+    const stripe = useMyStripe();
+    const userId = user.id;
+    const [memberCode, setMemberCode] = useState("");
+    const [useMemberCode, setUseMemberCode] = useState(false);
+
+    const subscribeWithMemberCode = async (e) => {
+        e.preventDefault();
+        const isValid = await fire.isMemberCodeValid(userId, memberCode);
+        if (isValid) {
+            const res = await stream.followUser(userId);
+            if (res) {
+                setShowSubscribeModal(false);
+                setIsFollowing(true);
+            }
+        }
+    };
+
+    const subscribeWithStripe = async (e) => {
+        e.preventDefault();
+        const sub = await stripe.addSubscription(
+            userId,
+            stream.currentUser?.id
+        );
+        console.log("sub status", sub?.status);
+        if (sub?.status == "active") {
+            const res = await stream.followUser(userId);
+            if (res) {
+                setShowSubscribeModal(false);
+                setIsFollowing(true);
+            }
+        }
+    };
+
+    const subscribeFree = async (e) => {
+        e.preventDefault();
+        const res = await stream.followUser(userId);
+        if (res) {
+            setShowSubscribeModal(false);
+            setIsFollowing(true);
+        }
+    };
+
+    const handleSwitch = (e) => {
+        e.preventDefault();
+        setUseMemberCode(!useMemberCode);
+    };
+
+    if (useMemberCode) {
+        return (
+            <>
+                {" "}
+                <input
+                    type="text"
+                    placeholder="Member Code"
+                    value={memberCode}
+                    onChange={(e) => setMemberCode(e.target.value)}
+                    className="border-gray-400 border-2 rounded-full w-full h-10 p-2 mt-8 outline-none focus:outline-none"
+                />
+                <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white">
+                    <button type="button" onClick={subscribeWithMemberCode}>
+                        Subscribe
+                    </button>
+                </div>
+                <div className="flex justify-around">
+                    <button
+                        type="button"
+                        className="text-sm text-green-500 mt-2"
+                        onClick={handleSwitch}
+                    >
+                        I don't have a member code
+                    </button>
+                </div>
+            </>
+        );
+    } else if (!subPrice) {
+        return (
+            <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+                <button type="button" onClick={subscribeFree}>
+                    FOLLOW FOR FREE
+                </button>
+            </div>
+        );
+    } else if (subPrice && hasPaymentMethods) {
+        return (
+            <>
+                <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+                    <button type="button" onClick={subscribeWithStripe}>
+                        {`SUBSCRIBE FOR $${subPrice} (PER MONTH)`}
+                    </button>
+                </div>
+                <div className="flex justify-around">
+                    <button
+                        type="button"
+                        className="text-sm text-green-500 mt-2"
+                        onClick={handleSwitch}
+                    >
+                        I'm already a subscriber
+                    </button>
+                </div>
+            </>
+        );
+    } else {
+        return (
+            <>
+                <Link href={`/my/payments?returnTo=${user.userName}`}>
+                    <div className="border-green-500 bg-white border rounded-full w-full h-10 mt-8 flex items-center justify-around text-green-500">
+                        <button type="button">PLEASE ADD A PAYMENT CARD</button>
+                    </div>
+                </Link>
+                <div className="flex justify-around">
+                    <button
+                        type="button"
+                        className="text-sm text-green-500 mt-2"
+                        onClick={handleSwitch}
+                    >
+                        I'm already a subscriber
+                    </button>
+                </div>
+            </>
+        );
+    }
 }
 
 function LinkNotification() {

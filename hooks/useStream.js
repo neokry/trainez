@@ -1,6 +1,7 @@
 import { connect } from "getstream";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./useFirebase";
+import useMyStripe from "./useMyStripe";
 
 const streamContext = createContext();
 
@@ -21,10 +22,7 @@ function useProvideStream() {
     const [currentUser, setCurrentUser] = useState(null);
     const [streamToken, setStreamToken] = useState(false);
     const fire = useFirebase();
-
-    useEffect(() => {
-        if (streamToken) getCurrentUser();
-    }, [streamToken]);
+    const stripe = useMyStripe();
 
     const getClient = () => {
         console.log("loading client");
@@ -120,6 +118,12 @@ function useProvideStream() {
         }
     };
 
+    const unfollowUser = async (userId) => {
+        const client = getClient();
+        const feed = client.feed("timeline", client.currentUser.id);
+        await feed.unfollow("user", userId);
+    };
+
     const isFollowing = async (userId) => {
         try {
             const client = getClient();
@@ -135,6 +139,43 @@ function useProvideStream() {
         }
     };
 
+    const getFollowing = async () => {
+        const client = getClient();
+        const feed = client.feed("timeline", client.currentUser.id);
+
+        const following = await feed.following();
+
+        const userIds = following.results.map((follow) => {
+            const feedId = follow.target_id;
+            const split = feedId.split(":");
+            return split[1];
+        });
+
+        const info = stripe.getStripeInfo(currentUser.id);
+
+        const usersReq = {
+            userIds: userIds,
+            customerId: info.customerId,
+        };
+
+        const res = await fetch(`/api/stream/users/details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(usersReq),
+        });
+
+        return await res.json();
+    };
+
+    const getFollowingStats = async () => {
+        const response = await fetch(
+            `/api/stream/${currentUser.id}/followStats`
+        );
+        return await response.json();
+    };
+
     return {
         getStreamToken,
         updateUser,
@@ -144,6 +185,9 @@ function useProvideStream() {
         streamToken,
         clearUser,
         followUser,
+        unfollowUser,
         isFollowing,
+        getFollowing,
+        getFollowingStats,
     };
 }

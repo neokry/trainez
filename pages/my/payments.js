@@ -5,6 +5,7 @@ import {
     useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/layout";
@@ -14,15 +15,16 @@ import useMyStripe from "../../hooks/useMyStripe";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import stateList from "../../public/states";
 
-const stripePromise = loadStripe(
-    "pk_test_51HtG6uFc6WEwdah25wh7hk6TZxs1Cu0ZfpVDlyWYL8xLxzIBdLx30sHBPRjSI48q7hu6Ek1TAMvryN9Rmw32YU7E00v2Az97iP"
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
 
 export default function Payments() {
     const req = useRequireAuth();
+    const router = useRouter();
     const myStripe = useMyStripe();
     const auth = useAuth();
     const [methods, setMethods] = useState(null);
+
+    const { returnTo } = router.query;
 
     const getPaymentMethods = async () => {
         console.log("Getting methods");
@@ -34,6 +36,10 @@ export default function Payments() {
     useEffect(() => {
         if (auth.user?.uid) getPaymentMethods();
     }, [auth.user]);
+
+    if (!req) {
+        return <Loading />;
+    }
 
     return (
         <Layout>
@@ -54,11 +60,19 @@ export default function Payments() {
                         case false:
                             return (
                                 <Elements stripe={stripePromise}>
-                                    <AddCard />
+                                    <AddCard
+                                        returnTo={returnTo}
+                                        getPaymentMethods={getPaymentMethods}
+                                    />
                                 </Elements>
                             );
                         default:
-                            return <PaymentMethodList methods={methods} />;
+                            return (
+                                <PaymentMethodList
+                                    methods={methods}
+                                    setMethods={setMethods}
+                                />
+                            );
                     }
                 })()}
             </div>
@@ -66,18 +80,32 @@ export default function Payments() {
     );
 }
 
-function PaymentMethodList({ methods }) {
+function PaymentMethodList({ methods, setMethods }) {
     return (
         <div className="mt-5 md:w-1/2 lg:w-1/3">
             {methods.map((method, i) => {
-                return <PaymentMethod key={i} method={method} />;
+                return (
+                    <PaymentMethod
+                        key={i}
+                        method={method}
+                        setMethods={setMethods}
+                    />
+                );
             })}
         </div>
     );
 }
 
-function PaymentMethod({ method }) {
+function PaymentMethod({ method, setMethods }) {
     console.log(method);
+    const stripe = useMyStripe();
+
+    const handleClick = async (e) => {
+        e.preventDefault();
+        const res = await stripe.detatchPaymentMethod(method.id);
+        if (res) setMethods(false);
+    };
+
     return (
         <div className="border-gray-300 border-2 p-3 rounded-md">
             <div className="flex justify-between">
@@ -90,7 +118,11 @@ function PaymentMethod({ method }) {
                 </p>
             </div>
             <div className="flex justify-between mt-5 border-t border-gray-300 pt-2">
-                <button type="button" className="text-red-600">
+                <button
+                    type="button"
+                    className="text-red-600"
+                    onClick={handleClick}
+                >
                     Delete
                 </button>
                 <p className="text-gray-600">
@@ -105,13 +137,14 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function AddCard() {
+function AddCard({ returnTo, getPaymentMethods }) {
     const { register, handleSubmit, errors } = useForm();
     const stripe = useStripe();
     const auth = useAuth();
     const myStripe = useMyStripe();
     const elements = useElements();
     const states = stateList.states;
+    const router = useRouter();
 
     const onSubmit = async (data) => {
         if (!stripe || !elements) return;
@@ -134,7 +167,15 @@ function AddCard() {
         });
 
         if (!error && auth.user?.uid && paymentMethod.id) {
-            myStripe.addPaymentMethod(auth.user?.uid, paymentMethod.id);
+            const res = await myStripe.addPaymentMethod(
+                auth.user?.uid,
+                paymentMethod.id
+            );
+            if (res && returnTo) {
+                router.push(`/${returnTo}?payment=true`);
+            } else if (res) {
+                getPaymentMethods();
+            }
         }
     };
 

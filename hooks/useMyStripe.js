@@ -74,6 +74,17 @@ export default function useMyStripe() {
         }
     };
 
+    const getDashboardLink = async (userId) => {
+        const info = await getStripeInfo(userId);
+        if (!info.accountId) return false;
+
+        const res = await fetch(
+            `/api/stripe/accounts/${info.accountId}/dashboard`
+        );
+        const json = await res.json();
+        return json.url;
+    };
+
     const getAccount = async (userId) => {
         const info = await getStripeInfo(userId);
         if (!info.accountId) return false;
@@ -123,6 +134,7 @@ export default function useMyStripe() {
 
         const subscriptionPriceReq = {
             price: price,
+            userId: userId,
             accountId: info.accountId,
             productId: info.productId ?? false,
         };
@@ -136,7 +148,15 @@ export default function useMyStripe() {
         });
 
         const json = await res.json();
-        if (json?.priceId) updateStripeInfo(userId, json);
+        if (json?.priceId) await updateStripeInfo(userId, json);
+        return true;
+    };
+
+    const detatchPaymentMethod = async (paymentId) => {
+        const res = await fetch(
+            `/api/stripe/customers/payment/detatch/${paymentId}/`
+        );
+        return res;
     };
 
     const getSubscriptionPrice = async (userId) => {
@@ -149,13 +169,61 @@ export default function useMyStripe() {
         return await res.json();
     };
 
+    const addSubscription = async (creatorId, subscriberId) => {
+        const subscriberInfo = await getStripeInfo(subscriberId);
+        const creatorInfo = await getStripeInfo(creatorId);
+
+        const subscriptionReq = {
+            priceId: creatorInfo.priceId,
+            accountId: creatorInfo.accountId,
+            customerId: subscriberInfo.customerId,
+            creatorId: creatorId,
+            subscriberId: subscriberId,
+        };
+
+        const res = await fetch(`/api/stripe/subscriptions`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subscriptionReq),
+        });
+
+        return await res.json();
+    };
+
+    const cancelSubscription = async (creatorId, subscriberId) => {
+        const subscriberInfo = await getStripeInfo(subscriberId);
+        const creatorInfo = await getStripeInfo(creatorId);
+
+        const cancelReq = {
+            accountId: creatorInfo.accountId,
+            customerId: subscriberInfo.customerId,
+        };
+
+        const res = await fetch(`/api/stripe/subscriptions/cancel`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(cancelReq),
+        });
+
+        return await res.json();
+    };
+
     return {
+        getStripeInfo,
         setupStripe,
         linkAccount,
+        getDashboardLink,
         getAccount,
         addPaymentMethod,
         getPaymentMethods,
+        detatchPaymentMethod,
         addSubscriptionPrice,
         getSubscriptionPrice,
+        addSubscription,
+        cancelSubscription,
     };
 }

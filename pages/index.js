@@ -27,7 +27,9 @@ function IndexPage() {
                     />
                 </div>
                 <div className="md:mt-24 md:w-1/2 flex justify-around">
-                    <Signup showTitle={true} />
+                    <div className="w-full md:w-1/2">
+                        <Signup showTitle={true} />
+                    </div>
                 </div>
             </div>
         );

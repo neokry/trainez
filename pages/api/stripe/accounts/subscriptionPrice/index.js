@@ -1,6 +1,4 @@
-const stripe = require("stripe")(
-    "sk_test_51HtG6uFc6WEwdah2bAN2a3POHM0XCOq3fQhC4D8Mm2MWPXM1c43QXv7niSkjkEaMGfISp5tNoP1mHWQ6QwZkBXBq008c71THGp"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 export default async function SubscribePrice(req, res) {
     if (req.method === "POST") {
@@ -21,7 +19,7 @@ export default async function SubscribePrice(req, res) {
                     );
                     const product = await stripe.products.create({
                         name:
-                            account.business_profile.name +
+                            (account.business_profile.name ?? "TrainEZ") +
                             " Premium Subscription",
                     });
                     productId = product.id;
@@ -32,6 +30,7 @@ export default async function SubscribePrice(req, res) {
                     currency: "usd",
                     recurring: { interval: "month" },
                     product: productId,
+                    lookup_key: priceReq.userId,
                 });
 
                 console.log("pricing created");

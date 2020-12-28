@@ -17,7 +17,7 @@ export default function Signup({ showTitle }) {
                 await auth.signup(data.email, data.password, data.name);
             }
         } catch (err) {
-            console.log(err.code);
+            console.log("ERROR");
             switch (err.code) {
                 case "auth/wrong-password":
                 case "auth/user-not-found":
@@ -35,7 +35,7 @@ export default function Signup({ showTitle }) {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col w-full px-8 lg:w-1/2 text-center"
+            className="flex flex-col px-8 text-center"
         >
             {showTitle && <h1 className="font-bold text-2xl">Train EZ</h1>}
             <div className="mt-10 flex flex-col">
