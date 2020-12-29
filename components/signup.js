@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
+import Spinner from "./spinner";
 
 export default function Signup({ showTitle }) {
     const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState(false);
     const { register, handleSubmit, errors } = useForm();
+    const [isLoading, setIsLoading] = useState(false);
     const auth = useAuth();
 
     const onSubmit = async (data) => {
         try {
+            setIsLoading(true);
             if (isLogin) {
                 await auth.signin(data.email, data.password);
             } else {
@@ -97,7 +100,16 @@ export default function Signup({ showTitle }) {
                 type="submit"
                 className="rounded-md bg-green-500 text-white font-bold text-xl py-2 mt-5"
             >
-                {isLogin ? "Login" : "Sign Up"}
+                <div className="flex justify-around">
+                    <div className="flex items-center">
+                        <p>{isLogin ? "Login" : "Sign Up"}</p>
+                        {isLoading && (
+                            <div className="ml-2">
+                                <Spinner />
+                            </div>
+                        )}
+                    </div>
+                </div>
             </button>
             <h3 className="mt-5">
                 {isLogin

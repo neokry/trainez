@@ -3,10 +3,12 @@ import Loading from "../components/loading";
 import MainFeed from "../components/mainFeed";
 import Signup from "../components/signup";
 import { useAuth } from "../hooks/useAuth";
+import { useStream } from "../hooks/useStream";
 
 function IndexPage() {
     const [authFailed, setAuthFailed] = useState(false);
     const auth = useAuth();
+    const stream = useStream();
 
     useEffect(() => {
         if (auth.user === false) {
@@ -33,7 +35,7 @@ function IndexPage() {
                 </div>
             </div>
         );
-    } else if (auth.user) {
+    } else if (stream.currentUser) {
         return <MainFeed />;
     } else {
         return <Loading />;

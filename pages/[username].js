@@ -49,6 +49,12 @@ export default function User() {
         if (stream.currentUser) returnFromSignin();
     }, [stream.currentUser]);
 
+    useEffect(() => {
+        if (user?.id == stream.currentUser?.id) {
+            setIsCurrentUser(true);
+        }
+    }, [stream.currentUser, user]);
+
     //Initilize page with user data
     const initPage = async () => {
         try {
@@ -85,10 +91,6 @@ export default function User() {
             setShowSignIn(false);
             if (user?.id != stream.currentUser?.id) setShowSubscribeModal(true);
             else setIsCurrentUser(true);
-        }
-
-        if (user?.id == stream.currentUser?.id) {
-            setIsCurrentUser(true);
         }
     };
 

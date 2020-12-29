@@ -5,6 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import Loading from "../../components/loading";
 import { useEffect, useState } from "react";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import Skeleton from "../../components/skeleton";
 
 export default function Payout() {
     const req = useRequireAuth();
@@ -70,16 +71,18 @@ export default function Payout() {
                                     </span>
                                 );
                             default:
-                                return null;
+                                return (
+                                    <span className="bg-gray-200 text-gray-200 w-40 h-10 animate-pulse">
+                                        You're ready to recieve payouts!
+                                    </span>
+                                );
                         }
                     })()}
                 </p>
             </div>
             <div className="flex items-center p-5 py-10">
                 <div className="mr-10">
-                    {isLinked !== null && (
-                        <p className="text-gray-600">Stripe</p>
-                    )}
+                    <p className="text-gray-600">Stripe</p>
                 </div>
                 <div>
                     <StripeButton
@@ -95,7 +98,11 @@ export default function Payout() {
 
 function StripeButton({ isLinked, handleClick, handleDashboard }) {
     if (isLinked === null) {
-        return null;
+        return (
+            <div className="w-40">
+                <Skeleton />
+            </div>
+        );
     } else if (isLinked === true) {
         return (
             <button

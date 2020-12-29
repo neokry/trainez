@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../../../components/layout";
 import Loading from "../../../components/loading";
+import Skeleton from "../../../components/skeleton";
 import { useAuth } from "../../../hooks/useAuth";
 import useMyStripe from "../../../hooks/useMyStripe";
 import { useRequireAuth } from "../../../hooks/useRequireAuth";
@@ -32,16 +33,20 @@ export default function Subscription() {
         return <Loading />;
     }
 
-    if (isLinked === null) {
-        return <Layout></Layout>;
-    }
-
     return (
         <Layout>
             <h1 className="font-bold border-b-2 text-2xl text-gray-700">
                 Subscription
             </h1>
-            {isLinked ? <SubscriptionForm /> : <UnlinkedForm />}
+            {(() => {
+                switch (isLinked) {
+                    case null:
+                    case true:
+                        return <SubscriptionForm />;
+                    case false:
+                        return <UnlinkedForm />;
+                }
+            })()}
         </Layout>
     );
 }
@@ -117,39 +122,50 @@ function SubscriptionForm() {
         if (res) setIsSaved(true);
     };
 
-    if (!isLoaded) {
-        return <div></div>;
-    }
-
     return (
         <div className="mt-5 md:w-1/2">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <p className="text-gray-600">Price per month</p>
-                <div className="border-gray-400 border-2 rounded-md w-full h-10 p-2 flex items-center">
-                    <p className="mr-2 text-gray-500">$</p>
-                    <input
-                        className="outline-none focus:outline-none"
-                        type="text"
-                        ref={register}
-                        placeholder="Free"
-                        name="price"
-                    />
-                </div>
-                <div className="border-t-2 mt-5 flex justify-end w-full">
-                    <div>
-                        <button
-                            type="button"
-                            className="w-20 p-2 mt-5 text-sm mr-2 border-gray-700 border rounded-full text-gray-700"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="w-20 p-2 mt-5 text-sm bg-green-500 rounded-full text-white"
-                        >
-                            Save
-                        </button>
+                {isLoaded ? (
+                    <div className="border-gray-400 border-2 rounded-md w-full h-10 p-2 flex items-center">
+                        <p className="mr-2 text-gray-500">$</p>
+                        <input
+                            className="outline-none focus:outline-none"
+                            type="text"
+                            ref={register}
+                            placeholder="Free"
+                            name="price"
+                        />
                     </div>
+                ) : (
+                    <Skeleton />
+                )}
+                <div className="border-t-2 mt-5 flex justify-end w-full">
+                    {isLoaded ? (
+                        <div>
+                            <button
+                                type="button"
+                                className="w-20 p-2 mt-5 text-sm mr-2 border-gray-700 border rounded-full text-gray-700"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="w-20 p-2 mt-5 text-sm bg-green-500 rounded-full text-white"
+                            >
+                                Save
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="w-20 mt-5 mr-2">
+                                <Skeleton />
+                            </div>
+                            <div className="w-20 mt-5">
+                                <Skeleton />
+                            </div>
+                        </>
+                    )}
                 </div>
                 {isSaved && (
                     <div className="mt-2 flex justify-end w-full">

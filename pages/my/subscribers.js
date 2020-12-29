@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import Loading from "../../components/loading";
+import Skeleton from "../../components/skeleton";
+import SubscriptionSkeleton from "../../components/subscriptionSkeleton";
 import UserCard from "../../components/userCard";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useStream } from "../../hooks/useStream";
@@ -26,7 +28,14 @@ export default function Subscribers() {
     }
 
     if (followers === null) {
-        return <Layout></Layout>;
+        return (
+            <Layout>
+                <h1 className="font-bold border-b-2 text-2xl text-gray-700">
+                    Followers
+                </h1>
+                <SubscriptionSkeleton />
+            </Layout>
+        );
     }
 
     return (
@@ -38,7 +47,7 @@ export default function Subscribers() {
                 <div className="mt-5">
                     {followers?.map((user, idx) => {
                         return (
-                            <div className="md:w-1/2" key={idx}>
+                            <div className="md:w-1/2 mt-2" key={idx}>
                                 <UserCard user={user} />
                             </div>
                         );

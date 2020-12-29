@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/layout";
 import Loading from "../../components/loading";
+import Skeleton from "../../components/skeleton";
 import { useAuth } from "../../hooks/useAuth";
 import useMyStripe from "../../hooks/useMyStripe";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
@@ -56,7 +57,7 @@ export default function Payments() {
                 {(() => {
                     switch (methods) {
                         case null:
-                            return null;
+                            return <LoadingForm />;
                         case false:
                             return (
                                 <Elements stripe={stripePromise}>
@@ -92,6 +93,48 @@ function PaymentMethodList({ methods, setMethods }) {
                     />
                 );
             })}
+        </div>
+    );
+}
+
+function LoadingForm() {
+    return (
+        <div>
+            <div className="md:flex">
+                <div className="md:w-1/2">
+                    <div className="p-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                </div>
+                <div className="md:w-1/2">
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                    <div className="p-2 mt-2">
+                        <Skeleton />
+                    </div>
+                </div>
+            </div>
+            <div className="md:flex md:justify-end md:mt-5">
+                <div className="w-full md:w-40">
+                    <Skeleton />
+                </div>
+            </div>
         </div>
     );
 }

@@ -15,6 +15,7 @@ import {
     faShareSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
+import Spinner from "../../../components/spinner";
 
 export default function Profile() {
     const stream = useStream();
@@ -33,6 +34,7 @@ export default function Profile() {
     const [memberCode, setMemberCode] = useState("");
     const [showCopiedText, setShowCopiedText] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [isLoading, setIsloading] = useState(false);
     const req = useRequireAuth();
 
     useEffect(() => {
@@ -61,8 +63,10 @@ export default function Profile() {
     };
 
     const onSubmit = async (data) => {
+        setIsloading(true);
         const result = await stream.updateUser(data);
         setIsSaved(result);
+        setIsloading(false);
     };
 
     const onSubscriptionClick = (e) => {
@@ -105,7 +109,16 @@ export default function Profile() {
                             type="submit"
                             className="w-20 p-2 text-sm bg-green-500 rounded-full text-white"
                         >
-                            Save
+                            <div className="flex justify-around">
+                                <div className="flex items-center">
+                                    <p>Save</p>
+                                    {isLoading && (
+                                        <div className="ml-2">
+                                            <Spinner />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </button>
                     </div>
                     {isSaved && (
