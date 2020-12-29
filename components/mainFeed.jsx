@@ -1,6 +1,6 @@
-import Stream from "../components/stream";
+import Stream from "./stream";
 import { FlatFeed, LikeButton, Activity } from "react-activity-feed";
-import Layout from "../components/layout";
+import Layout from "./layout";
 import { useState } from "react";
 import { UserActivity } from "./userActivity";
 

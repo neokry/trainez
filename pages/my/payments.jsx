@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import Layout from "../../components/layout";
 import Loading from "../../components/loading";
 import Skeleton from "../../components/skeleton";
+import Spinner from "../../components/spinner";
 import { useAuth } from "../../hooks/useAuth";
 import useMyStripe from "../../hooks/useMyStripe";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
@@ -84,7 +85,7 @@ export default function Payments() {
 function PaymentMethodList({ methods, setMethods }) {
     return (
         <div className="mt-5 md:w-1/2 lg:w-1/3">
-            {methods.map((method, i) => {
+            {methods?.map((method, i) => {
                 return (
                     <PaymentMethod
                         key={i}
@@ -188,9 +189,11 @@ function AddCard({ returnTo, getPaymentMethods }) {
     const elements = useElements();
     const states = stateList.states;
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data) => {
         if (!stripe || !elements) return;
+        setIsLoading(true);
         const cardElement = elements.getElement(CardElement);
 
         const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -220,6 +223,8 @@ function AddCard({ returnTo, getPaymentMethods }) {
                 getPaymentMethods();
             }
         }
+
+        setIsLoading(false);
     };
 
     return (
@@ -282,7 +287,14 @@ function AddCard({ returnTo, getPaymentMethods }) {
                         type="submit"
                         className="w-full p-2 bg-green-500 rounded-md text-white shadow-sm mt-4 md:w-40"
                     >
-                        Save Card
+                        <div className="flex justify-around">
+                            <div className="flex items-center">
+                                <div className="mr-2">
+                                    <p>Save Card</p>
+                                </div>
+                                {isLoading && <Spinner />}
+                            </div>
+                        </div>
                     </button>
                 </div>
             </div>

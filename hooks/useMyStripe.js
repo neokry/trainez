@@ -1,55 +1,33 @@
-import { projectFirestore } from "../configs/firebase";
+import axios from "axios";
+import useMyStripeInfo from "./useMyStripeInfo";
 
 export default function useMyStripe() {
+    const stripeInfo = useMyStripeInfo();
+
     const setupStripe = async (userId, email) => {
         const connectAcount = { email: email, country: "US" };
         try {
-            const response = await fetch("/api/stripe/create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(connectAcount),
-            });
-            const json = await response.json();
-            if (json) {
+            const response = await axios.post(
+                "/api/stripe/create",
+                connectAcount
+            );
+            const data = response.data;
+            if (data) {
                 const updateData = {
-                    accountId: json.accId,
-                    customerId: json.cusId,
+                    accountId: data.accId,
+                    customerId: data.cusId,
                 };
-                updateStripeInfo(userId, updateData);
+                await stripeInfo.updateStripeInfo(userId, updateData);
+                return data;
             }
         } catch (err) {
             console.log("Error creating stripe account " + err);
         }
     };
 
-    const updateStripeInfo = async (userId, data) => {
-        try {
-            await projectFirestore
-                .collection("stripeInfo")
-                .doc(userId)
-                .set(data, { merge: true });
-        } catch (err) {
-            console.log("Error updating stripe id ", err);
-        }
-    };
-
-    const getStripeInfo = async (userId) => {
-        try {
-            const doc = await projectFirestore
-                .collection("stripeInfo")
-                .doc(userId)
-                .get();
-            return doc.data();
-        } catch (err) {
-            console.log("Error getting stripe id " + err);
-        }
-    };
-
     const linkAccount = async (userId) => {
         const url = window.location.href;
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info.accountId) return false;
 
         const linkReq = {
@@ -59,15 +37,11 @@ export default function useMyStripe() {
         };
 
         try {
-            const response = await fetch("/api/stripe/accounts/link", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(linkReq),
-            });
-            const json = await response.json();
-            return json.url;
+            const response = await axios.post(
+                "/api/stripe/accounts/link",
+                linkReq
+            );
+            return response.data?.url;
         } catch (err) {
             console.log("Error linking account " + err);
             return false;
@@ -75,27 +49,25 @@ export default function useMyStripe() {
     };
 
     const getDashboardLink = async (userId) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info.accountId) return false;
 
-        const res = await fetch(
+        const res = await axios.get(
             `/api/stripe/accounts/${info.accountId}/dashboard`
         );
-        const json = await res.json();
-        return json.url;
+        return res.data.url;
     };
 
     const getAccount = async (userId) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info.accountId) return false;
 
-        const res = await fetch(`/api/stripe/accounts/${info.accountId}/`);
-        const json = await res.json();
-        return json.account;
+        const res = await axios.get(`/api/stripe/accounts/${info.accountId}/`);
+        return res.data.account;
     };
 
     const addPaymentMethod = async (userId, paymentMethodId) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info?.customerId) return false;
 
         const pyamentAttachment = {
@@ -105,29 +77,26 @@ export default function useMyStripe() {
 
         console.log("Adding payment method");
 
-        const res = await fetch(`/api/stripe/customers/payment`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(pyamentAttachment),
-        });
+        const res = await axios.post(
+            `/api/stripe/customers/payment`,
+            pyamentAttachment
+        );
 
-        return res;
+        return res.data;
     };
 
     const getPaymentMethods = async (userId) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info?.customerId) return false;
 
-        const res = await fetch(
+        const res = await axios.get(
             `/api/stripe/customers/payment/${info.customerId}/`
         );
-        return await res.json();
+        return res.data;
     };
 
     const addSubscriptionPrice = async (userId, price) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info?.accountId) return false;
 
         console.log("Adding subscription price");
@@ -139,39 +108,36 @@ export default function useMyStripe() {
             productId: info.productId ?? false,
         };
 
-        const res = await fetch(`/api/stripe/accounts/subscriptionPrice`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(subscriptionPriceReq),
-        });
+        const res = await axios.post(
+            `/api/stripe/accounts/subscriptionPrice`,
+            subscriptionPriceReq
+        );
 
-        const json = await res.json();
-        if (json?.priceId) await updateStripeInfo(userId, json);
+        if (res.data?.priceId)
+            await stripeInfo.updateStripeInfo(userId, res.data);
         return true;
     };
 
     const detatchPaymentMethod = async (paymentId) => {
-        const res = await fetch(
+        const res = await axios.get(
             `/api/stripe/customers/payment/detatch/${paymentId}/`
         );
-        return res;
+        return res.data;
     };
 
     const getSubscriptionPrice = async (userId) => {
-        const info = await getStripeInfo(userId);
+        const info = await stripeInfo.getStripeInfo(userId);
         if (!info?.priceId) return false;
 
-        const res = await fetch(
+        const res = await axios.get(
             `/api/stripe/accounts/subscriptionPrice/${info.priceId}/`
         );
-        return await res.json();
+        return res.data;
     };
 
     const addSubscription = async (creatorId, subscriberId) => {
-        const subscriberInfo = await getStripeInfo(subscriberId);
-        const creatorInfo = await getStripeInfo(creatorId);
+        const subscriberInfo = await stripeInfo.getStripeInfo(subscriberId);
+        const creatorInfo = await stripeInfo.getStripeInfo(creatorId);
 
         const subscriptionReq = {
             priceId: creatorInfo.priceId,
@@ -181,39 +147,32 @@ export default function useMyStripe() {
             subscriberId: subscriberId,
         };
 
-        const res = await fetch(`/api/stripe/subscriptions`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(subscriptionReq),
-        });
+        const res = await axios.post(
+            `/api/stripe/subscriptions`,
+            subscriptionReq
+        );
 
-        return await res.json();
+        return await res.data;
     };
 
     const cancelSubscription = async (creatorId, subscriberId) => {
-        const subscriberInfo = await getStripeInfo(subscriberId);
-        const creatorInfo = await getStripeInfo(creatorId);
+        const subscriberInfo = await stripeInfo.getStripeInfo(subscriberId);
+        const creatorInfo = await stripeInfo.getStripeInfo(creatorId);
 
         const cancelReq = {
             accountId: creatorInfo.accountId,
             customerId: subscriberInfo.customerId,
         };
 
-        const res = await fetch(`/api/stripe/subscriptions/cancel`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(cancelReq),
-        });
+        const res = await axios.post(
+            `/api/stripe/subscriptions/cancel`,
+            cancelReq
+        );
 
-        return await res.json();
+        return res.data;
     };
 
     return {
-        getStripeInfo,
         setupStripe,
         linkAccount,
         getDashboardLink,

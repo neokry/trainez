@@ -41,6 +41,7 @@ export default function Subscription() {
             {(() => {
                 switch (isLinked) {
                     case null:
+                        return <SkeletonForm />;
                     case true:
                         return <SubscriptionForm />;
                     case false:
@@ -173,6 +174,23 @@ function SubscriptionForm() {
                     </div>
                 )}
             </form>
+        </div>
+    );
+}
+
+function SkeletonForm() {
+    return (
+        <div className="mt-5 md:w-1/2">
+            <p className="text-gray-600">Price per month</p>
+            <Skeleton />
+            <div className="border-t-2 mt-5 flex justify-end w-full">
+                <div className="w-20 mt-5 mr-2">
+                    <Skeleton />
+                </div>
+                <div className="w-20 mt-5">
+                    <Skeleton />
+                </div>
+            </div>
         </div>
     );
 }

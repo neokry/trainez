@@ -23,7 +23,7 @@ export default async function Create(req, res) {
 
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
-                res.end();
+                res.end(paymentAttachment.method);
             } catch (err) {
                 console.log("Error creating stripe account " + err);
                 throw err;

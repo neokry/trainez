@@ -2,6 +2,8 @@ import { connect } from "getstream";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./useFirebase";
 import useMyStripe from "./useMyStripe";
+import useMyStripeInfo from "./useMyStripeInfo";
+import axios from "axios";
 
 const streamContext = createContext();
 
@@ -37,13 +39,9 @@ function useProvideStream() {
 
     const getStreamToken = async (userId) => {
         try {
-            const res = await fetch(`/api/stream/${userId}/token`);
-            if (!res.ok) {
-                throw Error(res.statusText);
-            }
-            const json = await res.json();
-            localStorage.setItem("stream", json.token);
-            setStreamToken(json.token);
+            const res = await axios.get(`/api/stream/${userId}/token`);
+            localStorage.setItem("stream", res.data.token);
+            setStreamToken(res.data.token);
             return true;
         } catch (err) {
             console.log("Error getting stream token " + err);
@@ -52,10 +50,8 @@ function useProvideStream() {
 
     const getUser = async (userId) => {
         try {
-            const response = await fetch(`/api/stream/${userId}`);
-            const json = await response.json();
-            console.log("got json " + JSON.stringify(json));
-            return json?.user;
+            const response = await axios.get(`/api/stream/${userId}`);
+            return response.data.user;
         } catch (err) {
             console.log("Error getting user " + err);
         }
@@ -141,6 +137,7 @@ function useProvideStream() {
 
     const getFollowing = async () => {
         const client = getClient();
+        const stripeInfo = useMyStripeInfo();
         const feed = client.feed("timeline", currentUser.id);
 
         const following = await feed.following();
@@ -151,22 +148,16 @@ function useProvideStream() {
             return split[1];
         });
 
-        const info = await stripe.getStripeInfo(currentUser.id);
+        const info = await stripeInfo.getStripeInfo(currentUser.id);
 
         const usersReq = {
             userIds: userIds,
             customerId: info.customerId,
         };
 
-        const res = await fetch(`/api/stream/users/details`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(usersReq),
-        });
+        const res = await axios.post(`/api/stream/users/details`, usersReq);
 
-        return await res.json();
+        return res.data;
     };
 
     const getFollowers = async () => {
@@ -185,22 +176,16 @@ function useProvideStream() {
             userIds: userIds,
         };
 
-        const res = await fetch(`/api/stream/users/details`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(usersReq),
-        });
+        const res = await axios.post(`/api/stream/users/details`, usersReq);
 
-        return await res.json();
+        return res.data;
     };
 
     const getFollowingStats = async () => {
-        const response = await fetch(
+        const response = await axios.get(
             `/api/stream/${currentUser.id}/followStats`
         );
-        return await response.json();
+        return await response.data;
     };
 
     return {
