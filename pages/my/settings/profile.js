@@ -20,7 +20,14 @@ export default function Profile() {
     const stream = useStream();
     const fire = useFirebase();
     const router = useRouter();
-    const { register, handleSubmit, reset, getValues, errors } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        getValues,
+        errors,
+        watch,
+    } = useForm();
     const [profileImg, setProfileImg] = useState(false);
     const [userName, setUserName] = useState("");
     const [memberCode, setMemberCode] = useState("");
@@ -137,6 +144,19 @@ export default function Profile() {
                             <p className="text-red-400">
                                 Username is not availible.
                             </p>
+                        )}
+                        {!errors.userName && (
+                            <>
+                                {(() => {
+                                    const userName = watch("userName", false);
+                                    const url = window.location.origin;
+                                    return (
+                                        <p className="text-sm text-gray-500 ml-2">
+                                            {url + "/" + userName}
+                                        </p>
+                                    );
+                                })()}
+                            </>
                         )}
                     </div>
                     <div className="mt-4">
