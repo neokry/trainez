@@ -130,7 +130,7 @@ export default function Profile() {
                 <div className="w-full md:w-1/2 border-r border-l bg-gray-200">
                     <div className="bg-white px-2 pb-4">
                         <div className="pt-2">
-                            <label className="flex items-left w-24">
+                            <label className="flex items-left w-24 cursor-pointer">
                                 <input
                                     type="file"
                                     className="invisible z-30 absolute"

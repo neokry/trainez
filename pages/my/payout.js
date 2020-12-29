@@ -22,8 +22,7 @@ export default function Payout() {
     const checkIsLinked = async (userId) => {
         const account = await stripe.getAccount(userId);
         setIsLinked(account.details_submitted ?? false);
-        if (account.details_submitted ?? false)
-            setCanPayout(account.payouts_enabled ?? false);
+        setCanPayout(account.payouts_enabled ?? false);
     };
 
     const handleClick = async (e) => {
@@ -50,35 +49,33 @@ export default function Payout() {
                 Payout
             </h1>
             <div className="mt-5 px-3">
-                <p className="text-gray-600 md:w-2/3">
-                    Just like a real paycheck, your account balance is deposited
-                    to your stripe account. Turn things on by connecting or
-                    creating your stripe account below.{" "}
-                    {(() => {
-                        switch (canPayout) {
-                            case true:
-                                return (
-                                    <span className="text-green-500">
-                                        You're ready to recieve payouts!
-                                    </span>
-                                );
-                            case false:
-                                return (
+                {canPayout === null ? (
+                    <>
+                        <Skeleton />
+                        <Skeleton />
+                    </>
+                ) : (
+                    <p className="text-gray-600 md:w-2/3">
+                        Just like a real paycheck, your account balance is
+                        deposited to your stripe account. Turn things on by
+                        connecting or creating your stripe account below.{" "}
+                        {canPayout ? (
+                            <span className="text-green-500">
+                                You're ready to recieve payouts!
+                            </span>
+                        ) : (
+                            <>
+                                {isLinked && (
                                     <span className="text-red-500">
                                         Your account it still missing some
                                         information check the dashboard for more
                                         details.
                                     </span>
-                                );
-                            default:
-                                return (
-                                    <span className="bg-gray-200 text-gray-200 w-40 h-10 animate-pulse">
-                                        You're ready to recieve payouts!
-                                    </span>
-                                );
-                        }
-                    })()}
-                </p>
+                                )}
+                            </>
+                        )}
+                    </p>
+                )}
             </div>
             <div className="flex items-center p-5 py-10">
                 <div className="mr-10">

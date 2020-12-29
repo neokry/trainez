@@ -170,7 +170,7 @@ function UserHeader({
                     <div className="flex items-center">
                         {isCurrentUser && (
                             <Link href="/my/settings/profile">
-                                <div className="w-34 px-2 mr-2 h-12 border-2 border-green-400 rounded-full text-green-400 flex items-center justify-around">
+                                <div className="w-34 px-2 mr-2 h-12 cursor-pointer border-2 border-green-400 rounded-full text-green-400 flex items-center justify-around">
                                     <FontAwesomeIcon
                                         className="text-xl mr-3"
                                         icon={faCog}

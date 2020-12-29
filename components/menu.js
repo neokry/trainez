@@ -65,7 +65,7 @@ export default function menu({ user, followingStats }) {
                             </div>
                             <div className="mt-5 border-t-2">
                                 <Link href={"/" + user.userName}>
-                                    <div className="flex items-center mt-2">
+                                    <div className="flex items-center mt-2 cursor-pointer">
                                         <FontAwesomeIcon
                                             icon={faUserCircle}
                                             className="text-xl m-2"
@@ -74,7 +74,7 @@ export default function menu({ user, followingStats }) {
                                     </div>
                                 </Link>
                                 <Link href="/my/settings/profile">
-                                    <div className="flex items-center mt-2">
+                                    <div className="flex items-center mt-2 cursor-pointer">
                                         <FontAwesomeIcon
                                             icon={faCog}
                                             className="text-xl m-2"
@@ -85,7 +85,7 @@ export default function menu({ user, followingStats }) {
                             </div>
                             <div className="mt-5 border-t-2">
                                 <Link href="/my/payments">
-                                    <div className="flex items-center mt-2">
+                                    <div className="flex items-center mt-2 cursor-pointer">
                                         <FontAwesomeIcon
                                             icon={faCreditCard}
                                             className="text-xl m-2"
@@ -100,7 +100,7 @@ export default function menu({ user, followingStats }) {
                                 </Link>
 
                                 <Link href="/my/payout">
-                                    <div className="flex items-center mt-2">
+                                    <div className="flex items-center mt-2 cursor-pointer">
                                         <FontAwesomeIcon
                                             icon={faUniversity}
                                             className="text-xl m-2"
