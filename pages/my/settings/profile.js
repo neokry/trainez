@@ -94,10 +94,10 @@ export default function Profile() {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <Layout>
-                <div className="border-b-2 text-2xl pb-5">
-                    <div className="md:w-1/2 flex justify-between items-center">
+        <Layout>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="border-b border-r border-l bg-white w-full md:w-1/2 p-4 -mt-6">
+                    <div className="flex justify-between items-center text-2xl">
                         <h1 className="font-bold text-gray-700">
                             Edit Profile
                         </h1>
@@ -108,89 +108,100 @@ export default function Profile() {
                             Save
                         </button>
                     </div>
+                    {isSaved && (
+                        <p className="text-md text-green-600">
+                            Settings saved!
+                        </p>
+                    )}
                 </div>
+                <div className="w-full md:w-1/2 border-r border-l bg-gray-200">
+                    <div className="bg-white px-2 pb-4">
+                        <div className="pt-2">
+                            <label className="flex items-left w-24">
+                                <input
+                                    type="file"
+                                    className="invisible z-30 absolute"
+                                    id="myFile"
+                                    ref={register}
+                                    onChange={imgPreview}
+                                    name="profileImageFile"
+                                />
 
-                <div className="md:w-1/2 ">
-                    <label className="flex items-left w-24 mt-4">
-                        <input
-                            type="file"
-                            className="invisible z-30 absolute"
-                            id="myFile"
-                            ref={register}
-                            onChange={imgPreview}
-                            name="profileImageFile"
-                        />
-
-                        <ProfilePicture
-                            displayName={userName}
-                            profileImg={profileImg}
-                            isSmall={false}
-                            isEditable={true}
-                        />
-                    </label>
-                    <div className="mt-4">
-                        <p className="text-gray-600">Username</p>
-                        <input
-                            type="text"
-                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                            placeholder="Username"
-                            name="userName"
-                            ref={register({
-                                validate: async (value) =>
-                                    await validateUsername(value),
-                            })}
-                        ></input>
-                        {errors.userName && (
-                            <p className="text-red-400">
-                                Username is not availible.
-                            </p>
-                        )}
-                        {!errors.userName && (
-                            <>
-                                {(() => {
-                                    const userName = watch("userName", false);
-                                    const url = window.location.origin;
-                                    return (
-                                        <p className="text-sm text-gray-500 ml-2">
-                                            {url + "/" + userName}
-                                        </p>
-                                    );
-                                })()}
-                            </>
-                        )}
+                                <ProfilePicture
+                                    displayName={userName}
+                                    profileImg={profileImg}
+                                    isSmall={false}
+                                    isEditable={true}
+                                />
+                            </label>
+                        </div>
+                        <div className="mt-4">
+                            <p className="text-gray-600">Username</p>
+                            <input
+                                type="text"
+                                className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                                placeholder="Username"
+                                name="userName"
+                                ref={register({
+                                    validate: async (value) =>
+                                        await validateUsername(value),
+                                })}
+                            ></input>
+                            {errors.userName && (
+                                <p className="text-red-400">
+                                    Username is not availible.
+                                </p>
+                            )}
+                            {!errors.userName && (
+                                <>
+                                    {(() => {
+                                        const userName = watch(
+                                            "userName",
+                                            false
+                                        );
+                                        const url = window.location.origin;
+                                        return (
+                                            <p className="text-sm text-gray-500 ml-2">
+                                                {url + "/" + userName}
+                                            </p>
+                                        );
+                                    })()}
+                                </>
+                            )}
+                        </div>
+                        <div className="mt-4">
+                            <p className="text-gray-600">Display name</p>
+                            <input
+                                type="text"
+                                className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                                placeholder="DisplayName"
+                                ref={register}
+                                name="name"
+                            ></input>
+                        </div>
+                        <div className="mt-4">
+                            <p className="text-gray-600">Bio</p>
+                            <textarea
+                                className="border-gray-400 border-2 rounded-md w-full h-20 p-2"
+                                placeholder="Bio"
+                                ref={register}
+                                rows="2"
+                                name="bio"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <p className="text-gray-600">Website URL</p>
+                            <input
+                                type="text"
+                                className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
+                                placeholder="Website URL"
+                                ref={register}
+                                name="url"
+                            ></input>
+                        </div>
                     </div>
-                    <div className="mt-4">
-                        <p className="text-gray-600">Display name</p>
-                        <input
-                            type="text"
-                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                            placeholder="DisplayName"
-                            ref={register}
-                            name="name"
-                        ></input>
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-gray-600">Bio</p>
-                        <textarea
-                            className="border-gray-400 border-2 rounded-md w-full h-20 p-2"
-                            placeholder="Bio"
-                            ref={register}
-                            rows="2"
-                            name="bio"
-                        />
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-gray-600">Website URL</p>
-                        <input
-                            type="text"
-                            className="border-gray-400 border-2 rounded-md w-full h-10 p-2"
-                            placeholder="Website URL"
-                            ref={register}
-                            name="url"
-                        ></input>
-                    </div>
-                    <div className="mt-6">
-                        <p className="text-gray-600">Subscription</p>
+                    <div className="mt-4 pt-2 bg-white">
+                        <p className="text-gray-600 px-2">Subscription</p>
                         <div className="border-gray-400 border-t border-b rounded-md w-full h-10 p-2 mt-2">
                             <button
                                 className="text-gray-700 w-full"
@@ -206,41 +217,38 @@ export default function Profile() {
                             </button>
                         </div>
                     </div>
-                    {/* memberCode && (
-                    <>
-                        <div className="mt-4 flex items-baseline">
-                            <p className="mr-2">Member Code:</p>
-                            <div className="mr-2">
-                                <label className="text-lg font-bold">
-                                    {memberCode}
-                                </label>
+                    {memberCode && (
+                        <div className="bg-white px-2">
+                            <div className="mt-4 flex items-baseline">
+                                <p className="mr-2 text-gray-600">
+                                    Member Code:
+                                </p>
+                                <div className="mr-2">
+                                    <label className="text-lg font-bold">
+                                        {memberCode}
+                                    </label>
+                                </div>
+                                <button
+                                    className="mr-2"
+                                    type="button"
+                                    onClick={copyToClipboard}
+                                >
+                                    <FontAwesomeIcon icon={faShareSquare} />
+                                </button>
                             </div>
-                            <button
-                                className="mr-2"
-                                type="button"
-                                onClick={copyToClipboard}
-                            >
-                                <FontAwesomeIcon icon={faShareSquare} />
-                            </button>
-                        </div>
-                        {showCopiedText && (
-                            <p className="text-md text-green-600">
-                                Copied member code to clipboard!
+                            {showCopiedText && (
+                                <p className="text-md text-green-600">
+                                    Copied member code to clipboard!
+                                </p>
+                            )}
+                            <p className="text-gray-600 text-sm">
+                                (For existing members already paying for a
+                                subscription)
                             </p>
-                        )}
-                        <p className="text-gray-600">
-                            (Gives members access to your paid content)
-                        </p>
-                    </>
-                ) */}
-
-                    {isSaved && (
-                        <p className="text-md text-green-600">
-                            Settings saved!
-                        </p>
+                        </div>
                     )}
                 </div>
-            </Layout>
-        </form>
+            </form>
+        </Layout>
     );
 }
