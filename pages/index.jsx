@@ -4,6 +4,7 @@ import MainFeed from "../components/mainFeed";
 import Signup from "../components/signup";
 import { useAuth } from "../hooks/useAuth";
 import { useStream } from "../hooks/useStream";
+import Image from "next/image";
 
 function IndexPage() {
     const [authFailed, setAuthFailed] = useState(false);
@@ -23,10 +24,12 @@ function IndexPage() {
             <div className="md:flex md:justify-start">
                 <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
                     <div className="h-40 w-40 md:h-screen md:w-full relative">
-                        <img
+                        <Image
                             src="/landingImage.jpg"
                             alt="landing image"
-                            className="h-40 w-40 md:h-screen md:w-full object-top object-cover rounded-full md:rounded-md"
+                            layout="fill"
+                            objectFit="cover"
+                            className="object-top object-cover rounded-full md:rounded-md"
                         />
                     </div>
                 </div>
