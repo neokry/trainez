@@ -1,13 +1,18 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
+import { connect } from "getstream";
 
-const stripe = new Stripe(
-    "sk_test_51HtG6uFc6WEwdah2bAN2a3POHM0XCOq3fQhC4D8Mm2MWPXM1c43QXv7niSkjkEaMGfISp5tNoP1mHWQ6QwZkBXBq008c71THGp",
-    {
-        apiVersion: "2020-08-27",
-    }
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+    apiVersion: "2020-08-27",
+});
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+const stream = connect(
+    process.env.NEXT_PUBLIC_STREAM_KEY,
+    process.env.STREAM_SECRET,
+    process.env.NEXT_PUBLIC_STREAM_APP_ID
 );
-const webhookSecret = "whsec_SnqnZnrWagP5h5Yu6EIU2OnymfggPO9W";
 
 export const config = {
     api: {
@@ -20,6 +25,8 @@ const handler = async (req, res) => {
         const buf = await buffer(req);
         const sig = req.headers["stripe-signature"];
 
+        console.log("Webhook called!");
+
         let event;
 
         try {
@@ -31,15 +38,10 @@ const handler = async (req, res) => {
 
         // Handle the event
         switch (event.type) {
-            case "payment_intent.succeeded":
-                const paymentIntent = event.data.object;
-                console.log("PaymentIntent was successful!");
+            case "customer.subscription.deleted":
+                const sub = event.data.object;
+                await handleSubscriptionDelete(sub);
                 break;
-            case "payment_method.attached":
-                const paymentMethod = event.data.object;
-                console.log("PaymentMethod was attached to a Customer!");
-                break;
-            // ... handle other event types
             default:
                 console.log(`Unhandled event type ${event.type}`);
         }
@@ -51,6 +53,14 @@ const handler = async (req, res) => {
     }
 };
 
-const handleSubscribe = async (data) => {};
+const handleSubscriptionDelete = async (sub) => {
+    console.log("Unfollowing with sub data", sub.metadata);
+
+    const data = sub.metadata;
+    const feed = stream.feed("timeline", data.subscriberId);
+    await feed.unfollow("user", data.creatorId);
+
+    console.log("Unfollowed successfully");
+};
 
 export default handler;

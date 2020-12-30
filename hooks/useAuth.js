@@ -4,7 +4,7 @@ import { useFirebase } from "./useFirebase";
 import { useStream } from "./useStream";
 import { useRouter } from "next/router";
 import firebase from "firebase";
-import useStripe from "./useStripe";
+import useMyStripe from "./useMyStripe";
 
 const authContext = createContext();
 
@@ -22,7 +22,7 @@ function useProvideAuth() {
     const stream = useStream();
     const fire = useFirebase();
     const router = useRouter();
-    const stripe = useStripe();
+    const stripe = useMyStripe();
 
     const signin = async (email, password) => {
         try {
@@ -33,7 +33,8 @@ function useProvideAuth() {
             const usr = response.user;
             setUser(usr);
             localStorage.setItem("user", usr);
-            await stream.getStreamToken(usr.uid);
+            const success = await stream.getStreamToken(usr.uid);
+            if (success) await stream.getCurrentUser();
             firebase.analytics().logEvent("login", { method: "email" });
         } catch (err) {
             console.log("Error signing in " + err);
@@ -62,7 +63,8 @@ function useProvideAuth() {
                     name: name,
                 });
                 await fire.createMemberCode(usr.uid);
-                await stripe.createAccount(usr.uid, email);
+                await stripe.setupStripe(usr.uid, email);
+                await stream.getCurrentUser();
 
                 firebase.analytics().logEvent("sign_up", { method: "email" });
             }
@@ -88,11 +90,12 @@ function useProvideAuth() {
     };
 
     useEffect(() => {
-        const unsub = projectAuth.onAuthStateChanged((usr) => {
+        const unsub = projectAuth.onAuthStateChanged(async (usr) => {
             if (usr) {
                 setUser(usr);
                 localStorage.setItem("user", usr);
-                stream.getStreamToken(usr.uid);
+                const success = await stream.getStreamToken(usr.uid);
+                if (success) await stream.getCurrentUser();
             } else {
                 stream.clearUser();
                 setUser(false);

@@ -1,6 +1,9 @@
 import { connect } from "getstream";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./useFirebase";
+import useMyStripe from "./useMyStripe";
+import useMyStripeInfo from "./useMyStripeInfo";
+import axios from "axios";
 
 const streamContext = createContext();
 
@@ -21,10 +24,7 @@ function useProvideStream() {
     const [currentUser, setCurrentUser] = useState(null);
     const [streamToken, setStreamToken] = useState(false);
     const fire = useFirebase();
-
-    useEffect(() => {
-        if (streamToken) getCurrentUser();
-    }, [streamToken]);
+    const stripe = useMyStripe();
 
     const getClient = () => {
         console.log("loading client");
@@ -39,13 +39,9 @@ function useProvideStream() {
 
     const getStreamToken = async (userId) => {
         try {
-            const res = await fetch(`/api/stream/${userId}/token`);
-            if (!res.ok) {
-                throw Error(res.statusText);
-            }
-            const json = await res.json();
-            localStorage.setItem("stream", json.token);
-            setStreamToken(json.token);
+            const res = await axios.get(`/api/stream/${userId}/token`);
+            localStorage.setItem("stream", res.data.token);
+            setStreamToken(res.data.token);
             return true;
         } catch (err) {
             console.log("Error getting stream token " + err);
@@ -54,10 +50,8 @@ function useProvideStream() {
 
     const getUser = async (userId) => {
         try {
-            const response = await fetch(`/api/stream/${userId}`);
-            const json = await response.json();
-            console.log("got json " + JSON.stringify(json));
-            return json?.user;
+            const response = await axios.get(`/api/stream/${userId}`);
+            return response.data.user;
         } catch (err) {
             console.log("Error getting user " + err);
         }
@@ -120,6 +114,12 @@ function useProvideStream() {
         }
     };
 
+    const unfollowUser = async (userId) => {
+        const client = getClient();
+        const feed = client.feed("timeline", client.currentUser.id);
+        await feed.unfollow("user", userId);
+    };
+
     const isFollowing = async (userId) => {
         try {
             const client = getClient();
@@ -135,6 +135,59 @@ function useProvideStream() {
         }
     };
 
+    const getFollowing = async () => {
+        const client = getClient();
+        const stripeInfo = useMyStripeInfo();
+        const feed = client.feed("timeline", currentUser.id);
+
+        const following = await feed.following();
+
+        const userIds = following.results.map((follow) => {
+            const feedId = follow.target_id;
+            const split = feedId.split(":");
+            return split[1];
+        });
+
+        const info = await stripeInfo.getStripeInfo(currentUser.id);
+
+        const usersReq = {
+            userIds: userIds,
+            customerId: info.customerId,
+        };
+
+        const res = await axios.post(`/api/stream/users/details`, usersReq);
+
+        return res.data;
+    };
+
+    const getFollowers = async () => {
+        const client = getClient();
+        const feed = client.feed("user", client.currentUser.id);
+
+        const followers = await feed.followers();
+
+        const userIds = followers.results.map((follow) => {
+            const feedId = follow.feed_id;
+            const split = feedId.split(":");
+            return split[1];
+        });
+
+        const usersReq = {
+            userIds: userIds,
+        };
+
+        const res = await axios.post(`/api/stream/users/details`, usersReq);
+
+        return res.data;
+    };
+
+    const getFollowingStats = async () => {
+        const response = await axios.get(
+            `/api/stream/${currentUser.id}/followStats`
+        );
+        return await response.data;
+    };
+
     return {
         getStreamToken,
         updateUser,
@@ -144,6 +197,10 @@ function useProvideStream() {
         streamToken,
         clearUser,
         followUser,
+        unfollowUser,
         isFollowing,
+        getFollowing,
+        getFollowers,
+        getFollowingStats,
     };
 }
