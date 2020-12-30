@@ -58,7 +58,6 @@ export default function Profile() {
     };
 
     const validateUsername = async (username) => {
-        console.log(stream.currentUser.id);
         return await fire.isUsernameAvailible(stream.currentUser.id, username);
     };
 

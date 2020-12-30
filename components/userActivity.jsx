@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 export function UserActivity({ props }) {
     const [showComments, setShowComments] = useState(false);
     const router = useRouter();
-    console.log(props);
 
     const onClickUser = (user) => {
         const userName = user.data.userName;
@@ -21,7 +20,6 @@ export function UserActivity({ props }) {
 
     const onCommentClick = (e) => {
         e.preventDefault();
-        console.log("Coment click");
         setShowComments(!showComments);
     };
 

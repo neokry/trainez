@@ -20,7 +20,6 @@ export default function Signup({ showTitle }) {
                 await auth.signup(data.email, data.password, data.name);
             }
         } catch (err) {
-            console.log("ERROR");
             switch (err.code) {
                 case "auth/wrong-password":
                 case "auth/user-not-found":

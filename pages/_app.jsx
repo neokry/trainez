@@ -11,7 +11,6 @@ import { DefaultSeo } from "next-seo";
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
         firebase.analytics();
-        console.log("analytics setup");
     }, [firebase]);
 
     useEffect(() => {

@@ -1,3 +1,4 @@
+import { ErrorMessage } from "@hookform/error-message";
 import {
     Elements,
     CardElement,
@@ -141,7 +142,6 @@ function LoadingForm() {
 }
 
 function PaymentMethod({ method, setMethods }) {
-    console.log(method);
     const stripe = useMyStripe();
 
     const handleClick = async (e) => {
@@ -190,6 +190,7 @@ function AddCard({ returnTo, getPaymentMethods }) {
     const states = stateList.states;
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [cardError, setCardError] = useState(false);
 
     const onSubmit = async (data) => {
         if (!stripe || !elements) return;
@@ -222,6 +223,8 @@ function AddCard({ returnTo, getPaymentMethods }) {
             } else if (res) {
                 getPaymentMethods();
             }
+        } else {
+            setCardError(error.message);
         }
 
         setIsLoading(false);
@@ -232,18 +235,28 @@ function AddCard({ returnTo, getPaymentMethods }) {
             <div className="md:mr-5 md:w-1/2">
                 <input
                     type="text"
-                    ref={register}
+                    ref={register({
+                        required: "The street field is required",
+                    })}
                     name="street"
                     placeholder="Street"
                     className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-5"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="street" />
+                </div>
                 <input
                     type="text"
-                    ref={register}
+                    ref={register({
+                        required: "The city field is required",
+                    })}
                     name="city"
                     placeholder="City"
                     className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-5"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="city" />
+                </div>
                 <select
                     ref={register}
                     name="state"
@@ -262,25 +275,40 @@ function AddCard({ returnTo, getPaymentMethods }) {
             <div className="md:mt-0 md:w-1/2">
                 <input
                     type="zip"
-                    ref={register}
+                    ref={register({
+                        required: "The zip field is required",
+                    })}
                     name="zip"
                     placeholder="ZIP"
                     className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-5"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="zip" />
+                </div>
                 <input
                     type="text"
-                    ref={register}
+                    ref={register({
+                        required: "The E-mail field is required",
+                    })}
                     name="email"
                     placeholder="E-mail"
                     className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-8 md:mt-5"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="email" />
+                </div>
                 <input
                     type="text"
-                    ref={register}
+                    ref={register({
+                        required: "The name field is required",
+                    })}
                     name="name"
                     placeholder="Name on the card"
                     className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-5"
                 />
+                <div className="flex items-start text-red-400">
+                    <ErrorMessage errors={errors} name="name" />
+                </div>
                 <CardElement className="border-gray-400 border-2 rounded-md w-full h-10 p-2 mt-5" />
                 <div className="md:flex md:justify-end md:mt-5">
                     <button
@@ -297,6 +325,7 @@ function AddCard({ returnTo, getPaymentMethods }) {
                         </div>
                     </button>
                 </div>
+                {cardError && <p className="text-red-600">{cardError}</p>}
             </div>
         </form>
     );

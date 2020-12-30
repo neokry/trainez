@@ -13,7 +13,6 @@ function Layout(props) {
     const stream = useStream();
 
     useEffect(() => {
-        console.log("User: " + stream.currentUser?.data);
         if (stream.currentUser !== null) {
             const user = stream.currentUser?.data;
             getFollowingStats();

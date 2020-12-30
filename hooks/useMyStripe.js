@@ -4,13 +4,11 @@ import useMyStripeInfo from "./useMyStripeInfo";
 export default function useMyStripe() {
     const stripeInfo = useMyStripeInfo();
 
-    const setupStripe = async (userId, email) => {
-        const connectAcount = { email: email, country: "US" };
+    const setupStripe = async (userId, email, name) => {
+        const createReq = { email: email, country: "US", name: name };
+
         try {
-            const response = await axios.post(
-                "/api/stripe/create",
-                connectAcount
-            );
+            const response = await axios.post("/api/stripe/create", createReq);
             const data = response.data;
             if (data) {
                 const updateData = {

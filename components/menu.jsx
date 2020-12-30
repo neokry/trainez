@@ -13,7 +13,6 @@ import ProfilePicture from "./profilePicture";
 
 export default function menu({ user, followingStats }) {
     const auth = useAuth();
-    console.log("stats", followingStats);
 
     const signoutClick = (e) => {
         e.preventDefault();

@@ -438,7 +438,6 @@ function SubscribeControl({
             userId,
             stream.currentUser?.id
         );
-        console.log("sub status", sub?.status);
         if (sub?.status == "active") {
             const res = await stream.followUser(userId);
             if (res) {

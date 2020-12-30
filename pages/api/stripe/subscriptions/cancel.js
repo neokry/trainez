@@ -5,7 +5,6 @@ export default async function Cancel(req, res) {
         if (!req.body) res.status(400).end("No data sent");
         else {
             const cancelReq = req.body;
-            console.log("Canceling sub " + JSON.stringify(cancelReq));
 
             try {
                 const subscriptions = await stripe.subscriptions.list({

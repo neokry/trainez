@@ -63,7 +63,7 @@ function useProvideAuth() {
                     name: name,
                 });
                 await fire.createMemberCode(usr.uid);
-                await stripe.setupStripe(usr.uid, email);
+                await stripe.setupStripe(usr.uid, email, name);
                 await stream.getCurrentUser();
 
                 firebase.analytics().logEvent("sign_up", { method: "email" });

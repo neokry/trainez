@@ -9,7 +9,6 @@ export default function MainFeed() {
 
     function handleCommentsClick(e) {
         e.preventDefault();
-        console.log(showComments);
         setShowComments(true);
     }
 
