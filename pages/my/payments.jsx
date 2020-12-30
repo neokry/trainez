@@ -31,7 +31,7 @@ export default function Payments() {
     const getPaymentMethods = async () => {
         console.log("Getting methods");
         const res = await myStripe.getPaymentMethods(auth.user.uid);
-        if (res.data.length > 0) setMethods(res.data);
+        if (res.data?.length > 0) setMethods(res.data);
         else setMethods(false);
     };
 

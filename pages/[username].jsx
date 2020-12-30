@@ -14,12 +14,14 @@ import {
     faShareSquare,
     faCog,
     faLink,
+    fas,
 } from "@fortawesome/free-solid-svg-icons";
 import Signup from "../components/signup";
 import Loading from "../components/loading";
 import ProfilePicture from "../components/profilePicture";
 import { motion } from "framer-motion";
 import useMyStripe from "../hooks/useMyStripe";
+import Spinner from "../components/spinner";
 
 export default function User() {
     const router = useRouter();
@@ -43,6 +45,10 @@ export default function User() {
     useEffect(() => {
         if (username) initPage();
     }, [username]);
+
+    useEffect(() => {
+        if (payment) setShowSubscribeModal(true);
+    }, [payment]);
 
     //Show subscribe modal if user logs in
     useEffect(() => {
@@ -411,6 +417,7 @@ function SubscribeControl({
     const userId = user.id;
     const [memberCode, setMemberCode] = useState("");
     const [useMemberCode, setUseMemberCode] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const subscribeWithMemberCode = async (e) => {
         e.preventDefault();
@@ -426,6 +433,7 @@ function SubscribeControl({
 
     const subscribeWithStripe = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         const sub = await stripe.addSubscription(
             userId,
             stream.currentUser?.id
@@ -438,6 +446,7 @@ function SubscribeControl({
                 setIsFollowing(true);
             }
         }
+        setIsLoading(false);
     };
 
     const subscribeFree = async (e) => {
@@ -465,7 +474,7 @@ function SubscribeControl({
                     onChange={(e) => setMemberCode(e.target.value)}
                     className="border-gray-400 border-2 rounded-full w-full h-10 p-2 mt-8 outline-none focus:outline-none"
                 />
-                <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white">
+                <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white focus:outline-none">
                     <button type="button" onClick={subscribeWithMemberCode}>
                         Subscribe
                     </button>
@@ -483,7 +492,7 @@ function SubscribeControl({
         );
     } else if (!subPrice) {
         return (
-            <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+            <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs focus:outline-none">
                 <button type="button" onClick={subscribeFree}>
                     FOLLOW FOR FREE
                 </button>
@@ -492,9 +501,18 @@ function SubscribeControl({
     } else if (subPrice && hasPaymentMethods) {
         return (
             <>
-                <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+                <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs focus:outline-none">
                     <button type="button" onClick={subscribeWithStripe}>
-                        {`SUBSCRIBE FOR $${subPrice} (PER MONTH)`}
+                        <div className="flex justify-around">
+                            <div className="flex items-center">
+                                <p>{`SUBSCRIBE FOR $${subPrice} (PER MONTH)`}</p>
+                                {isLoading && (
+                                    <div className="ml-2">
+                                        <Spinner />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </button>
                 </div>
                 <div className="flex justify-around">

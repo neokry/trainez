@@ -24,6 +24,8 @@ const handler = async (req, res) => {
         const buf = await buffer(req);
         const sig = req.headers["stripe-signature"];
 
+        console.log("Webhook called!");
+
         let event;
 
         try {
@@ -51,9 +53,13 @@ const handler = async (req, res) => {
 };
 
 const handleSubscriptionDelete = async (sub) => {
+    console.log("Unfollowing with sub data", sub.metadata);
+
     const data = sub.metadata;
     const feed = stream.feed("timeline", data.subscriberId);
     await feed.unfollow("user", data.creatorId);
+
+    console.log("Unfollowed successfully");
 };
 
 export default handler;
