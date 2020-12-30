@@ -1,7 +1,7 @@
 {
-    "name": "next-starter-tailwind",
-    "version": "1.1.0",
-    "description": "Next.js starter styled with Tailwind CSS",
+    "name": "train-ez",
+    "version": "1.0.0",
+    "description": "Membership app for fitness trainers",
     "main": "index.js",
     "scripts": {
         "analyze:tailwind-css-class-order": "rustywind --dry-run .",
@@ -18,12 +18,7 @@
         "type": "git",
         "url": "git+https://github.com/taylorbryant/next-starter-tailwind.git"
     },
-    "author": "Taylor Bryant",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/taylorbryant/next-starter-tailwind/issues"
-    },
-    "homepage": "https://github.com/taylorbryant/next-starter-tailwind#readme",
+    "author": "Patrick Genevich",
     "dependencies": {
         "@firebase/analytics": "^0.6.2",
         "@firebase/firestore": "^2.0.5",

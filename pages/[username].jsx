@@ -474,8 +474,12 @@ function SubscribeControl({
                     onChange={(e) => setMemberCode(e.target.value)}
                     className="border-gray-400 border-2 rounded-full w-full h-10 p-2 mt-8 outline-none focus:outline-none"
                 />
-                <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white focus:outline-none">
-                    <button type="button" onClick={subscribeWithMemberCode}>
+                <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white">
+                    <button
+                        type="button"
+                        className="outline-none focus:outline-none"
+                        onClick={subscribeWithMemberCode}
+                    >
                         Subscribe
                     </button>
                 </div>
@@ -492,8 +496,12 @@ function SubscribeControl({
         );
     } else if (!subPrice) {
         return (
-            <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs focus:outline-none">
-                <button type="button" onClick={subscribeFree}>
+            <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+                <button
+                    type="button"
+                    className="outline-none focus:outline-none"
+                    onClick={subscribeFree}
+                >
                     FOLLOW FOR FREE
                 </button>
             </div>
@@ -501,8 +509,12 @@ function SubscribeControl({
     } else if (subPrice && hasPaymentMethods) {
         return (
             <>
-                <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs focus:outline-none">
-                    <button type="button" onClick={subscribeWithStripe}>
+                <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
+                    <button
+                        type="button"
+                        className="outline-none focus:outline-none"
+                        onClick={subscribeWithStripe}
+                    >
                         <div className="flex justify-around">
                             <div className="flex items-center">
                                 <p>{`SUBSCRIBE FOR $${subPrice} (PER MONTH)`}</p>
@@ -518,7 +530,7 @@ function SubscribeControl({
                 <div className="flex justify-around">
                     <button
                         type="button"
-                        className="text-sm text-green-500 mt-2"
+                        className="text-sm text-green-500 mt-2 outline-none focus:outline-none"
                         onClick={handleSwitch}
                     >
                         I'm already a subscriber

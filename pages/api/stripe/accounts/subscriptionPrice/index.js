@@ -12,6 +12,7 @@ export default async function SubscribePrice(req, res) {
 
             try {
                 let productId = priceReq.productId;
+                let subs = false;
 
                 if (!productId) {
                     const account = await stripe.accounts.retrieve(
@@ -19,10 +20,15 @@ export default async function SubscribePrice(req, res) {
                     );
                     const product = await stripe.products.create({
                         name:
-                            (account.business_profile.name ?? "TrainEZ") +
-                            " Premium Subscription",
+                            (account.business_profile.name ??
+                                account.settings?.statement_descriptor ??
+                                "TrainEZ") + " Premium Subscription",
                     });
                     productId = product.id;
+                } else {
+                    subs = await stripe.subscriptions.list({
+                        price: priceReq.priceId,
+                    });
                 }
 
                 const price = await stripe.prices.create({
@@ -30,10 +36,22 @@ export default async function SubscribePrice(req, res) {
                     currency: "usd",
                     recurring: { interval: "month" },
                     product: productId,
-                    lookup_key: priceReq.userId,
                 });
 
                 console.log("pricing created");
+
+                if (subs) {
+                    const batch = [];
+                    subs.data.map((sub) => {
+                        const subItem = sub.items.data[0];
+                        const update = stripe.subscriptions.update(sub.id, {
+                            items: [{ id: subItem.id, price: price.id }],
+                        });
+                        batch.push(update);
+                    });
+                    await Promise.all(batch);
+                    console.log("Subscribtions updated");
+                }
 
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");

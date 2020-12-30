@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import Layout from "../../../components/layout";
 import Loading from "../../../components/loading";
 import Skeleton from "../../../components/skeleton";
+import Spinner from "../../../components/spinner";
 import { useAuth } from "../../../hooks/useAuth";
 import useMyStripe from "../../../hooks/useMyStripe";
 import { useRequireAuth } from "../../../hooks/useRequireAuth";
@@ -101,6 +102,7 @@ function SubscriptionForm() {
     const auth = useAuth();
     const [isSaved, setIsSaved] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (auth.user?.uid) {
@@ -116,11 +118,13 @@ function SubscriptionForm() {
 
     const onSubmit = async (data) => {
         console.log("Submitting price");
+        setIsLoading(true);
         const res = await stripe.addSubscriptionPrice(
             auth.user.uid,
             data.price
         );
         if (res) setIsSaved(true);
+        setIsLoading(false);
     };
 
     return (
@@ -154,7 +158,16 @@ function SubscriptionForm() {
                                 type="submit"
                                 className="w-20 p-2 mt-5 text-sm bg-green-500 rounded-full text-white"
                             >
-                                Save
+                                <div className="flex justify-around outline-none focus:outline-none">
+                                    <div className="flex items-center">
+                                        <p>Save</p>
+                                        {isLoading && (
+                                            <div className="ml-2">
+                                                <Spinner />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </button>
                         </div>
                     ) : (

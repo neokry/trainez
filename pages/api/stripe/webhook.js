@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
     apiVersion: "2020-08-27",
 });
 
-const webhookSecret = "whsec_CVZWO1IPlBqxbY1gdvZuWjnCHv1lTL2c";
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const stream = connect(
     process.env.NEXT_PUBLIC_STREAM_KEY,

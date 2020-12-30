@@ -106,6 +106,7 @@ export default function useMyStripe() {
             userId: userId,
             accountId: info.accountId,
             productId: info.productId ?? false,
+            priceId: info.priceId ?? false,
         };
 
         const res = await axios.post(
