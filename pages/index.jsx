@@ -59,7 +59,7 @@ function SEOSettings() {
     return (
         <NextSeo
             title="TrainEZ"
-            description="The easiest way to monitize your fitnesss content"
+            description="The easiest way to build a fitness community"
         />
     );
 }

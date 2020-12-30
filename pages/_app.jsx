@@ -7,7 +7,6 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { useEffect } from "react";
 import { DefaultSeo } from "next-seo";
-import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
@@ -34,6 +33,7 @@ function MyApp({ Component, pageProps }) {
                     locale: "en_IE",
                     url: "https://www.trainez.app/",
                     site_name: "TrainEZ",
+                    description: "The easiest way to build a fitness community",
                     images: [
                         {
                             url: "https://trainez.vercel.app/landingImage.jpg",
