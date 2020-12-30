@@ -34,6 +34,12 @@ function MyApp({ Component, pageProps }) {
                     locale: "en_IE",
                     url: "https://www.trainez.app/",
                     site_name: "TrainEZ",
+                    images: [
+                        {
+                            url: "https://trainez.vercel.app/landingImage.jpg",
+                            alt: "Landing Image",
+                        },
+                    ],
                 }}
             />
             <ProvideStream>
