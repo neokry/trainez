@@ -67,7 +67,7 @@ export default function Subscribers() {
         return (
             <Layout>
                 <h1 className="font-bold border-b-2 text-2xl text-gray-700">
-                    Followers
+                    Following
                 </h1>
                 <SubscriptionSkeleton />
             </Layout>
