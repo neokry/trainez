@@ -276,9 +276,15 @@ function SignupScreen({ user, setShowSignIn }) {
                     <div className="flex flex-col lg:w-3/4 items-center justify-around">
                         <div className="w-full ">
                             <div className="h-1/2 hidden md:flex justify-center items-baseline">
-                                <h1 className="flex items-center justify-around text-5xl font-thin text-green-500">
-                                    train ez
-                                </h1>
+                                <div>
+                                    <h1 className="flex items-center justify-around text-5xl font-thin text-green-500">
+                                        train ez
+                                    </h1>
+                                    <div className="text-sm font-thin">
+                                        The easiest way to build a fitness
+                                        community!
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="w-full">

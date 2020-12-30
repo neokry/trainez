@@ -41,15 +41,16 @@ export default function Signup({ showTitle }) {
             className="flex flex-col px-8 text-center"
         >
             {showTitle && (
-                <div
-                    animate={{ scale: 1.5 }}
-                    transition={{ duration: 3 }}
-                    className="flex items-center justify-around text-4xl md:text-5xl font-thin text-green-500"
-                >
-                    <div>train ez</div>
-                </div>
+                <>
+                    <div className="flex items-center justify-around text-4xl md:text-5xl font-thin text-green-500">
+                        <div>train ez</div>
+                    </div>
+                    <div className="text-sm font-thin">
+                        The easiest way to build a fitness community!
+                    </div>
+                </>
             )}
-            <div className="mt-10 md:mt-5 flex flex-col">
+            <div className="mt-10 md:mt-8 flex flex-col">
                 <input
                     className="bg-gray-200 py-2 px-5 rounded-md"
                     placeholder="E-mail"
@@ -64,7 +65,7 @@ export default function Signup({ showTitle }) {
                 </div>
 
                 <input
-                    className="bg-gray-200 py-2 px-5 mt-2 rounded-md"
+                    className="bg-gray-200 py-2 px-5 mt-4 rounded-md"
                     placeholder="Password"
                     type="password"
                     ref={register({
@@ -98,7 +99,7 @@ export default function Signup({ showTitle }) {
 
             <button
                 type="submit"
-                className="rounded-md bg-green-500 text-white font-bold text-xl py-2 mt-5"
+                className="rounded-md bg-green-500 text-white font-bold text-xl py-2 mt-8"
             >
                 <div className="flex justify-around">
                     <div className="flex items-center">
