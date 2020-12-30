@@ -6,6 +6,8 @@ import firebase from "firebase";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { useEffect } from "react";
+import { DefaultSeo } from "next-seo";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
@@ -25,11 +27,21 @@ function MyApp({ Component, pageProps }) {
     }, [Sentry]);
 
     return (
-        <ProvideStream>
-            <ProvideAuth>
-                <Component {...pageProps} />
-            </ProvideAuth>
-        </ProvideStream>
+        <div>
+            <DefaultSeo
+                openGraph={{
+                    type: "website",
+                    locale: "en_IE",
+                    url: "https://www.trainez.app/",
+                    site_name: "TrainEZ",
+                }}
+            />
+            <ProvideStream>
+                <ProvideAuth>
+                    <Component {...pageProps} />
+                </ProvideAuth>
+            </ProvideStream>
+        </div>
     );
 }
 

@@ -5,6 +5,7 @@ import Signup from "../components/signup";
 import { useAuth } from "../hooks/useAuth";
 import { useStream } from "../hooks/useStream";
 import Image from "next/image";
+import { NextSeo } from "next-seo";
 
 function IndexPage() {
     const [authFailed, setAuthFailed] = useState(false);
@@ -19,32 +20,48 @@ function IndexPage() {
         }
     }, [auth.user]);
 
-    if (authFailed) {
-        return (
-            <div className="md:flex md:justify-start">
-                <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
-                    <div className="h-40 w-40 md:h-screen md:w-full relative">
-                        <Image
-                            src="/landingImage.jpg"
-                            alt="landing image"
-                            layout="fill"
-                            objectFit="cover"
-                            className="object-top object-cover rounded-full md:rounded-md"
-                        />
-                    </div>
-                </div>
-                <div className="md:mt-24 md:w-1/2 flex justify-around">
-                    <div className="w-full md:w-1/2">
-                        <Signup showTitle={true} />
-                    </div>
-                </div>
-            </div>
-        );
-    } else if (stream.currentUser) {
-        return <MainFeed />;
-    } else {
-        return <Loading />;
-    }
+    return (
+        <>
+            <SEOSettings />
+            {(() => {
+                if (authFailed) {
+                    return (
+                        <div className="md:flex md:justify-start">
+                            <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
+                                <div className="h-40 w-40 md:h-screen md:w-full relative">
+                                    <Image
+                                        src="/landingImage.jpg"
+                                        alt="landing image"
+                                        layout="fill"
+                                        objectFit="cover"
+                                        className="object-top object-cover rounded-full md:rounded-md"
+                                    />
+                                </div>
+                            </div>
+                            <div className="md:mt-24 md:w-1/2 flex justify-around">
+                                <div className="w-full md:w-1/2">
+                                    <Signup showTitle={true} />
+                                </div>
+                            </div>
+                        </div>
+                    );
+                } else if (stream.currentUser) {
+                    return <MainFeed />;
+                } else {
+                    return <Loading />;
+                }
+            })()}
+        </>
+    );
+}
+
+function SEOSettings() {
+    return (
+        <NextSeo
+            title="TrainEZ"
+            description="The easiest way to monitize your fitnesss content"
+        />
+    );
 }
 
 export default IndexPage;
