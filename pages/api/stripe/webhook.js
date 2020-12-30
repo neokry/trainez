@@ -40,7 +40,7 @@ const handler = async (req, res) => {
         switch (event.type) {
             case "customer.subscription.deleted":
                 const sub = event.data.object;
-                handleSubscriptionDelete(sub);
+                await handleSubscriptionDelete(sub);
                 break;
             default:
                 console.log(`Unhandled event type ${event.type}`);
