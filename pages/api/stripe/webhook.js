@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
+import { connect } from "getstream";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
     apiVersion: "2020-08-27",
