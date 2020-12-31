@@ -421,6 +421,7 @@ function SubscribeControl({
 
     const subscribeWithMemberCode = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         const isValid = await fire.isMemberCodeValid(userId, memberCode);
         if (isValid) {
             const res = await stream.followUser(userId);
@@ -429,6 +430,7 @@ function SubscribeControl({
                 setIsFollowing(true);
             }
         }
+        setIsLoading(false);
     };
 
     const subscribeWithStripe = async (e) => {
@@ -450,11 +452,13 @@ function SubscribeControl({
 
     const subscribeFree = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         const res = await stream.followUser(userId);
         if (res) {
             setShowSubscribeModal(false);
             setIsFollowing(true);
         }
+        setIsLoading(false);
     };
 
     const handleSwitch = (e) => {
@@ -476,10 +480,19 @@ function SubscribeControl({
                 <div className="bg-green-500 rounded-full w-full h-10 mt-2 flex items-center justify-around text-white">
                     <button
                         type="button"
-                        className="outline-none focus:outline-none"
+                        className="outline-none focus:outline-none w-full h-full"
                         onClick={subscribeWithMemberCode}
                     >
-                        Subscribe
+                        <div className="flex justify-around">
+                            <div className="flex items-center">
+                                <p>Subscribe</p>
+                                {isLoading && (
+                                    <div className="ml-2">
+                                        <Spinner />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </button>
                 </div>
                 <div className="flex justify-around">
@@ -498,10 +511,17 @@ function SubscribeControl({
             <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
                 <button
                     type="button"
-                    className="outline-none focus:outline-none"
+                    className="outline-none focus:outline-none w-full h-full"
                     onClick={subscribeFree}
                 >
-                    FOLLOW FOR FREE
+                    <div className="flex items-center">
+                        <p>FOLLOW FOR FREE</p>
+                        {isLoading && (
+                            <div className="ml-2">
+                                <Spinner />
+                            </div>
+                        )}
+                    </div>
                 </button>
             </div>
         );
@@ -511,7 +531,7 @@ function SubscribeControl({
                 <div className="bg-green-500 rounded-full w-full h-10 mt-8 flex items-center justify-around text-white text-xs">
                     <button
                         type="button"
-                        className="outline-none focus:outline-none"
+                        className="outline-none focus:outline-none w-full"
                         onClick={subscribeWithStripe}
                     >
                         <div className="flex justify-around">
