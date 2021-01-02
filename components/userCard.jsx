@@ -1,7 +1,45 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import ProfilePicture from "./profilePicture";
 
 export default function UserCard({ user, onConfirm }) {
+    const [lastOnline, setLastOnline] = useState(false);
+    const minute = 60000;
+    const hour = minute * 60;
+    const day = hour * 24;
+
+    useEffect(() => {
+        if (user.lastOnline) {
+            const now = new Date();
+            const then = new Date(user.lastOnline);
+
+            console.log("now", now.getTime());
+            console.log("then", then.getTime());
+
+            const diff = now.getTime() - then.getTime();
+
+            if (diff < minute) setLastOnline("a few seconds");
+            else if (diff < hour)
+                setLastOnline(
+                    `${Math.floor(diff / minute)} ${
+                        diff / minute > 2 ? "minutes" : "minute"
+                    }`
+                );
+            else if (diff < day)
+                setLastOnline(
+                    `${Math.floor(diff / hour)} ${
+                        diff / hour > 2 ? "hours" : "hour"
+                    }`
+                );
+            else
+                setLastOnline(
+                    `${Math.floor(diff / day)} ${
+                        diff / day > 2 ? "days" : "day"
+                    }`
+                );
+        }
+    }, []);
+
     return (
         <div className="border border-gray-300 rounded-md p-5">
             <Link href={`/${user.userName}`}>
@@ -18,6 +56,11 @@ export default function UserCard({ user, onConfirm }) {
                         <p className="text-gray-600 text-sm">
                             @{user.userName}
                         </p>
+                        {user.lastOnline && (
+                            <p className="text-sm text-gray-500">
+                                Last seen {lastOnline} ago
+                            </p>
+                        )}
                     </div>
                 </div>
             </Link>
@@ -29,13 +72,13 @@ export default function UserCard({ user, onConfirm }) {
                                 e.preventDefault();
                                 onConfirm(user);
                             }}
-                            className="border border-green-500 text-green-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none"
+                            className="border border-green-500 text-green-500 px-5 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none"
                         >
                             Subscribed For {user.price ?? "FREE"}{" "}
                             {user.price && "$ (PER MONTH)"}
                         </button>
                     ) : (
-                        <div className="border border-gray-500 text-gray-500 px-5 py-2 rounded-full text-md font-semibold outline-none focus:outline-none">
+                        <div className="border border-gray-500 text-gray-500 px-5 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none">
                             <p>UNSUBSCRIBED</p>
                         </div>
                     )}

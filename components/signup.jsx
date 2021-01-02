@@ -31,6 +31,7 @@ export default function Signup({ showTitle }) {
                 default:
                     setError("An unexpected error has occured");
             }
+            setIsLoading(false);
         }
     };
 
@@ -118,7 +119,10 @@ export default function Signup({ showTitle }) {
             </h3>
             <button
                 type="button"
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={(e) => {
+                    e.preventDefault();
+                    setIsLogin(!isLogin);
+                }}
                 className="my-2 text-blue-500"
             >
                 {isLogin ? "Sign up for TrainEz.com" : "Login"}

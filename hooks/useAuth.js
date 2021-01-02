@@ -34,7 +34,10 @@ function useProvideAuth() {
             setUser(usr);
             localStorage.setItem("user", usr);
             const success = await stream.getStreamToken(usr.uid);
-            if (success) await stream.getCurrentUser();
+            if (success) {
+                await fire.setLastOnline(usr.uid);
+                await stream.getCurrentUser();
+            }
             firebase.analytics().logEvent("login", { method: "email" });
         } catch (err) {
             console.log("Error signing in " + err);
@@ -65,6 +68,7 @@ function useProvideAuth() {
                 await fire.createMemberCode(usr.uid);
                 await stripe.setupStripe(usr.uid, email, name);
                 await stream.getCurrentUser();
+                await fire.setLastOnline(usr.uid);
 
                 firebase.analytics().logEvent("sign_up", { method: "email" });
             }

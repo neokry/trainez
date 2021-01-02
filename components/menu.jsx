@@ -10,9 +10,11 @@ import {
 import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
 import ProfilePicture from "./profilePicture";
+import useSWR from "swr";
 
-export default function menu({ user, followingStats }) {
+export default function menu({ user }) {
     const auth = useAuth();
+    const { data: followStats } = useSWR(`/api/stream/${user.id}/followStats`);
 
     const signoutClick = (e) => {
         e.preventDefault();
@@ -52,13 +54,14 @@ export default function menu({ user, followingStats }) {
                             <div className="mt-2 flex text-sm">
                                 <Link href="/my/subscribers">
                                     <button type="button" className="mr-1">
-                                        {followingStats.followers} Fans
+                                        {followStats?.followers ?? "-"} Fans
                                     </button>
                                 </Link>
                                 {" - "}
                                 <Link href="/my/subscriptions">
                                     <button type="button" className="ml-1">
-                                        {followingStats.following} Following
+                                        {followStats?.following ?? "-"}{" "}
+                                        Following
                                     </button>
                                 </Link>
                             </div>
