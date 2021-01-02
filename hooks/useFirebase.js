@@ -1,4 +1,4 @@
-import { projectFirestore } from "../configs/firebase";
+import { projectFirestore, serverTimeStamp } from "../configs/firebase";
 import { useAuth } from "./useAuth";
 
 export function useFirebase() {
@@ -76,6 +76,16 @@ export function useFirebase() {
         }
     };
 
+    const setLastOnline = async (userId) => {
+        try {
+            await projectFirestore.collection("lastOnline").doc(userId).set({
+                lastOnline: serverTimeStamp,
+            });
+        } catch (err) {
+            console.log("Error setting last online", err);
+        }
+    };
+
     return {
         updateUsername,
         getUserIdFromName,
@@ -83,5 +93,6 @@ export function useFirebase() {
         isUsernameAvailible,
         createMemberCode,
         getMemberCode,
+        setLastOnline,
     };
 }
