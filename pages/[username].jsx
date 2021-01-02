@@ -514,13 +514,15 @@ function SubscribeControl({
                     className="outline-none focus:outline-none w-full h-full"
                     onClick={subscribeFree}
                 >
-                    <div className="flex items-center">
-                        <p>FOLLOW FOR FREE</p>
-                        {isLoading && (
-                            <div className="ml-2">
-                                <Spinner />
-                            </div>
-                        )}
+                    <div className="flex justify-around">
+                        <div className="flex items-center">
+                            <p>FOLLOW FOR FREE</p>
+                            {isLoading && (
+                                <div className="ml-2">
+                                    <Spinner />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </button>
             </div>

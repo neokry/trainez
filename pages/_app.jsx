@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { useEffect } from "react";
 import { DefaultSeo } from "next-seo";
+import { SWRConfig } from "swr";
 
 function MyApp({ Component, pageProps }) {
     useEffect(() => {
@@ -43,7 +44,15 @@ function MyApp({ Component, pageProps }) {
             />
             <ProvideStream>
                 <ProvideAuth>
-                    <Component {...pageProps} />
+                    <SWRConfig
+                        value={{
+                            refreshInterval: 3000,
+                            fetcher: (resource, init) =>
+                                fetch(resource, init).then((res) => res.json()),
+                        }}
+                    >
+                        <Component {...pageProps} />
+                    </SWRConfig>
                 </ProvideAuth>
             </ProvideStream>
         </div>

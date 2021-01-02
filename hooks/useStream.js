@@ -148,6 +148,8 @@ function useProvideStream() {
             return split[1];
         });
 
+        if (userIds.length === 0) return null;
+
         const info = await stripeInfo.getStripeInfo(currentUser.id);
 
         const usersReq = {
@@ -181,13 +183,6 @@ function useProvideStream() {
         return res.data;
     };
 
-    const getFollowingStats = async () => {
-        const response = await axios.get(
-            `/api/stream/${currentUser.id}/followStats`
-        );
-        return await response.data;
-    };
-
     return {
         getStreamToken,
         updateUser,
@@ -201,6 +196,5 @@ function useProvideStream() {
         isFollowing,
         getFollowing,
         getFollowers,
-        getFollowingStats,
     };
 }

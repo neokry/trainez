@@ -31,6 +31,7 @@ export default function Signup({ showTitle }) {
                 default:
                     setError("An unexpected error has occured");
             }
+            setIsLoading(false);
         }
     };
 
