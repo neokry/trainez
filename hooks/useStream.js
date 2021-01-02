@@ -174,6 +174,8 @@ function useProvideStream() {
             return split[1];
         });
 
+        if (userIds.length === 0) return null;
+
         const usersReq = {
             userIds: userIds,
         };
