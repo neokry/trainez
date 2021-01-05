@@ -22,6 +22,7 @@ import ProfilePicture from "../components/profilePicture";
 import { motion } from "framer-motion";
 import useMyStripe from "../hooks/useMyStripe";
 import Spinner from "../components/spinner";
+import { mutate } from "swr";
 
 export default function User() {
     const router = useRouter();
@@ -431,6 +432,7 @@ function SubscribeControl({
             }
         }
         setIsLoading(false);
+        updateStats();
     };
 
     const subscribeWithStripe = async (e) => {
@@ -448,6 +450,7 @@ function SubscribeControl({
             }
         }
         setIsLoading(false);
+        updateStats();
     };
 
     const subscribeFree = async (e) => {
@@ -459,6 +462,16 @@ function SubscribeControl({
             setIsFollowing(true);
         }
         setIsLoading(false);
+        updateStats();
+    };
+
+    const updateStats = () => {
+        mutate(
+            `/api/stream/${stream.currentUser.id}/followStats`,
+            fetch(
+                `/api/stream/${stream.currentUser.id}/followStats`
+            ).then((res) => res.json())
+        );
     };
 
     const handleSwitch = (e) => {

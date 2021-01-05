@@ -118,6 +118,7 @@ function useProvideStream() {
         const client = getClient();
         const feed = client.feed("timeline", client.currentUser.id);
         await feed.unfollow("user", userId);
+        return true;
     };
 
     const isFollowing = async (userId) => {
@@ -135,12 +136,18 @@ function useProvideStream() {
         }
     };
 
-    const getFollowing = async () => {
+    const getFollowing = async (limit, page) => {
         const client = getClient();
         const stripeInfo = useMyStripeInfo();
         const feed = client.feed("timeline", currentUser.id);
 
-        const following = await feed.following();
+        console.log("page", page);
+
+        const following = await feed.following({
+            limit: limit,
+            offset: page * limit,
+        });
+        console.log("following", JSON.stringify(following));
 
         const userIds = following.results.map((follow) => {
             const feedId = follow.target_id;
@@ -148,7 +155,7 @@ function useProvideStream() {
             return split[1];
         });
 
-        if (userIds.length === 0) return null;
+        if (userIds.length === 0) return { userIds: [] };
 
         const info = await stripeInfo.getStripeInfo(currentUser.id);
 
@@ -157,9 +164,7 @@ function useProvideStream() {
             customerId: info.customerId,
         };
 
-        const res = await axios.post(`/api/stream/users/details`, usersReq);
-
-        return res.data;
+        return usersReq;
     };
 
     const getFollowers = async () => {
@@ -174,15 +179,13 @@ function useProvideStream() {
             return split[1];
         });
 
-        if (userIds.length === 0) return null;
+        if (userIds.length === 0) return { userIds: [] };
 
         const usersReq = {
             userIds: userIds,
         };
 
-        const res = await axios.post(`/api/stream/users/details`, usersReq);
-
-        return res.data;
+        return usersReq;
     };
 
     return {

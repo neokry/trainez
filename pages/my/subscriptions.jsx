@@ -6,27 +6,76 @@ import useMyStripe from "../../hooks/useMyStripe";
 import { useStream } from "../../hooks/useStream";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import Loading from "../../components/loading";
-import Skeleton from "../../components/skeleton";
 import SubscriptionSkeleton from "../../components/subscriptionSkeleton";
+import useStreamUserDetails from "../../hooks/useStreamUserDetails";
+import useSWR from "swr";
+import { useAuth } from "../../hooks/useAuth";
 
-export default function Subscribers() {
-    const stream = useStream();
-    const stripe = useMyStripe();
+export default function Subscriptions() {
     const req = useRequireAuth();
-    const [follows, setFollows] = useState(null);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [currentSub, setCurrentSub] = useState(false);
+    const [hasMore, setHasMore] = useState(false);
+    const auth = useAuth();
+    const { data: followStats } = useSWR(
+        auth.user?.uid ? `/api/stream/${auth.user.uid}/followStats` : null,
+        {
+            refreshInterval: 0,
+        }
+    );
+
+    const [pageCount, setPageCount] = useState(0);
+    const pages = [];
+    for (let i = 0; i <= pageCount; i++) {
+        pages.push(<Page index={i} key={i} />);
+    }
 
     useEffect(() => {
-        if (!stream.currentUser) return;
-        getFollowing();
-    }, [stream]);
+        const maxLoaded = (pageCount + 1) * 10;
+        const following = followStats?.following ?? 0;
+        const diff = following - maxLoaded;
+        setHasMore(diff > 0);
+    }, [pageCount, followStats]);
 
-    const getFollowing = async () => {
-        const res = await stream.getFollowing();
-        if (res?.length > 0) setFollows(res);
-        else setFollows(false);
-        setCurrentSub(false);
+    if (!req) {
+        return <Loading />;
+    }
+
+    return (
+        <Layout>
+            <h1 className="font-bold border-b-2 text-2xl text-gray-700">
+                Following
+            </h1>
+            {pages}
+            {hasMore && (
+                <div className="w-1/2 flex justify-around mt-5">
+                    <button
+                        className="w-full border border-green-500 text-green-500 rounded-md px-5 py-2"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setPageCount(pageCount + 1);
+                        }}
+                    >
+                        Load More Users
+                    </button>
+                </div>
+            )}
+        </Layout>
+    );
+}
+
+function Page({ index }) {
+    const stream = useStream();
+    const stripe = useMyStripe();
+    const [currentSub, setCurrentSub] = useState(false);
+    const { users, isLoading, updateUsers } = useStreamUserDetails({
+        type: "following",
+        page: index,
+    });
+
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const onConfirm = (sub) => {
+        setCurrentSub(sub);
+        setShowConfirm(true);
     };
 
     const onCancel = async (e) => {
@@ -40,12 +89,12 @@ export default function Subscribers() {
             );
             if (res) {
                 setShowConfirm(false);
-                await getFollowing();
+                await updateUsers(currentSub.id);
             }
         } else {
-            stream.unfollowUser(currentSub.id);
+            await stream.unfollowUser(currentSub.id);
             setShowConfirm(false);
-            await getFollowing();
+            await updateUsers(currentSub.id);
         }
     };
 
@@ -54,31 +103,20 @@ export default function Subscribers() {
         setShowConfirm(false);
     };
 
-    const onConfirm = (sub) => {
-        setCurrentSub(sub);
-        setShowConfirm(true);
-    };
-
-    if (!req) {
-        return <Loading />;
+    if (isLoading) {
+        return <SubscriptionSkeleton />;
     }
 
-    if (follows === null) {
+    if (!users && users.length === 0) {
         return (
-            <Layout>
-                <h1 className="font-bold border-b-2 text-2xl text-gray-700">
-                    Following
-                </h1>
-                <SubscriptionSkeleton />
-            </Layout>
+            <div className="w-full flex justify-around text-gray-500 mt-5 text-xl font-semibold">
+                <p>Nothing was found</p>
+            </div>
         );
     }
 
     return (
-        <Layout>
-            <h1 className="font-bold border-b-2 text-2xl text-gray-700">
-                Following
-            </h1>
+        <div className="mt-5 w-full md:flex md:flex-wrap">
             {showConfirm && (
                 <Modal title="UNSUBSCRIBE">
                     <p className="text-gray-700">
@@ -97,21 +135,13 @@ export default function Subscribers() {
                     </div>
                 </Modal>
             )}
-            {follows ? (
-                <div className="mt-5">
-                    {follows?.map((user, idx) => {
-                        return (
-                            <div className="md:w-1/2 mt-2" key={idx}>
-                                <UserCard user={user} onConfirm={onConfirm} />
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className="w-full flex justify-around text-gray-500 mt-5 text-xl font-semibold">
-                    <p>Nothing was found</p>
-                </div>
-            )}
-        </Layout>
+            {users?.map((user, idx) => {
+                return (
+                    <div className="md:w-1/2 mt-2 px-2" key={idx}>
+                        <UserCard user={user} onConfirm={onConfirm} />
+                    </div>
+                );
+            })}
+        </div>
     );
 }

@@ -4,6 +4,7 @@ import Menu from "./menu";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStream } from "../hooks/useStream";
+import { mutate } from "swr";
 import Loading from "./loading";
 
 function Layout(props) {
@@ -14,7 +15,12 @@ function Layout(props) {
     useEffect(() => {
         if (stream.currentUser !== null) {
             const user = stream.currentUser?.data;
-            setUser({ ...user, id: stream.currentUser.id });
+            const id = stream.currentUser.id;
+            setUser({ ...user, id: id });
+            mutate(
+                `/api/stream/${id}/followStats`,
+                fetch(`/api/stream/${id}/followStats`).then((res) => res.json())
+            );
         }
     }, [stream.currentUser]);
 
