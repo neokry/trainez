@@ -13,9 +13,6 @@ export default function UserCard({ user, onConfirm }) {
             const now = new Date();
             const then = new Date(user.lastOnline);
 
-            console.log("now", now.getTime());
-            console.log("then", then.getTime());
-
             const diff = now.getTime() - then.getTime();
 
             if (diff < minute) setLastOnline("a few seconds");
@@ -46,15 +43,17 @@ export default function UserCard({ user, onConfirm }) {
                 <div className="flex items-center cursor-pointer">
                     <div className="mr-2">
                         <ProfilePicture
-                            displayName={user.name}
-                            profileImg={user.profileImage}
+                            displayName={user.userData.name}
+                            profileImg={user.userData.profileImage}
                             isSmall={false}
                         />
                     </div>
                     <div className="flex flex-col">
-                        <p className="font-semibold text-lg">{user.name}</p>
+                        <p className="font-semibold text-lg">
+                            {user.userData.name}
+                        </p>
                         <p className="text-gray-600 text-sm">
-                            @{user.userName}
+                            @{user.userData.userName}
                         </p>
                         {user.lastOnline && (
                             <p className="text-sm text-gray-500">
@@ -66,7 +65,7 @@ export default function UserCard({ user, onConfirm }) {
             </Link>
             {onConfirm && (
                 <div className="mt-5 flex items-center justify-around">
-                    {user.status === "active" ? (
+                    {user.status === "active" || user.status === null ? (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();

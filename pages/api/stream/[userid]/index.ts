@@ -1,6 +1,10 @@
 import { connect } from "getstream";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function Token(req, res) {
+export default async function UserId(
+    req: NextApiRequest,
+    res: NextApiResponse
+) {
     const {
         query: { userid },
     } = req;
@@ -11,10 +15,9 @@ export default async function Token(req, res) {
         process.env.NEXT_PUBLIC_STREAM_APP_ID
     );
 
-    await client.user(userid).getOrCreate();
-    const token = await client.createUserToken(userid);
+    const user = await client.user(userid as string).get();
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ token: token }));
+    res.end(JSON.stringify({ user: user.full }));
 }

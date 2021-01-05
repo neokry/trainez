@@ -35,6 +35,8 @@ function IndexPage() {
                                         layout="fill"
                                         objectFit="cover"
                                         className="object-top object-cover rounded-full md:rounded-md"
+                                        loading="eager"
+                                        priority="true"
                                     />
                                 </div>
                             </div>
