@@ -1,7 +1,7 @@
 import { connect } from "getstream";
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function Token(req: NextApiRequest, res: NextApiResponse) {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
     const {
         query: { userid },
     } = req;
@@ -18,4 +18,4 @@ export default async function Token(req: NextApiRequest, res: NextApiResponse) {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ token: token }));
-}
+};
