@@ -1,4 +1,4 @@
-import { projectFirestore } from "../../configs/firebase";
+import { projectFirestore } from "../../../configs/firebase";
 import LastOnlineEntity from "./entities/LastOnlineEntity";
 
 export default function FireRepository() {

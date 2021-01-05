@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import UserDetail from "../../../../api/models/UserDetail";
-import UserService from "../../../../api/services/UserService";
+import UserService from "../../../../lib/api/services/UserService";
 
 interface UsersRequest {
     userIds: string[];
