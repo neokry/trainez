@@ -45,7 +45,7 @@ export default function UserCard({ user, onConfirm }) {
                         <ProfilePicture
                             displayName={user.userData.name}
                             profileImg={user.userData.profileImage}
-                            isSmall={false}
+                            size="lg"
                         />
                     </div>
                     <div className="flex flex-col">

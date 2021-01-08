@@ -171,7 +171,7 @@ function UserHeader({
                 <ProfilePicture
                     displayName={user.name}
                     profileImg={user.profileImage}
-                    isSmall={false}
+                    size="lg"
                 />
                 <div>
                     <div className="flex items-center">
@@ -317,7 +317,7 @@ function SubscribeDetails({ user, isSignup }) {
                 <ProfilePicture
                     displayName={user.name}
                     profileImg={user.profileImage}
-                    isSmall={false}
+                    size="lg"
                 />
             </div>
             <div className="mt-2">

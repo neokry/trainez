@@ -37,7 +37,7 @@ export default function menu({ user }) {
                                 <ProfilePicture
                                     displayName={user.name}
                                     profileImg={user.profileImage}
-                                    isSmall={true}
+                                    size="md"
                                 />
                                 <div>
                                     <button className="text-2xl text-gray-500">

@@ -142,7 +142,7 @@ export default function Profile() {
                                 <ProfilePicture
                                     displayName={userName}
                                     profileImg={profileImg}
-                                    isSmall={false}
+                                    size="lg"
                                     isEditable={true}
                                 />
                             </label>
