@@ -62,7 +62,7 @@ export default function LandingPage() {
                     </div>
                     <ul className="flex items-center hidden space-x-8 lg:flex">
                         <li>
-                            <Link href="/signIn">
+                            <Link href="/login">
                                 <a
                                     aria-label="Sign in"
                                     title="Sign in"
@@ -73,7 +73,7 @@ export default function LandingPage() {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/signIn">
+                            <Link href="/login">
                                 <a
                                     aria-label="Sign up"
                                     title="Sign up"
@@ -125,7 +125,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <div className="flex items-center">
-                            <Link href="/signIn">
+                            <Link href="/login">
                                 <a
                                     className="inline-flex items-center justify-center h-12 px-6 mr-6 font-medium tracking-wide text-white transition duration-200 rounded shadow-md bg-green-700 hover:bg-green-700 focus:shadow-outline focus:outline-none"
                                     draggable="false"
@@ -219,7 +219,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <div>
-                            <Link href="/signIn">
+                            <Link href="/login">
                                 <a
                                     aria-label=""
                                     className="inline-flex items-center font-semibold transition-colors duration-200 text-green-600 hover:text-green-600"
@@ -570,7 +570,7 @@ export default function LandingPage() {
                             </div>
                         </div>
                         <div>
-                            <Link href="/signIn">
+                            <Link href="/login">
                                 <a className="inline-flex items-center justify-center w-full h-12 px-6 mb-4 font-medium tracking-wide text-white transition duration-200 bg-green-700 rounded shadow-md hover:bg-green-800 focus:shadow-outline focus:outline-none">
                                     Start for free
                                 </a>

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import Loading from "../components/loading";
 import MainFeed from "../components/mainFeed";
-import Signup from "../components/signup";
 import { useAuth } from "../hooks/useAuth";
 import { useStream } from "../hooks/useStream";
-import Image from "next/image";
 import { NextSeo } from "next-seo";
-import SignIn from "./signin";
 import LandingPage from "../components/landingPage";
 
 function IndexPage() {

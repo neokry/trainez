@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Signup from "../components/signup";
 
-export default function SignInPage() {
+export default function Login() {
     return (
         <div className="md:flex md:justify-start">
             <div className="mt-24 md:mt-0 md:w-1/2 flex justify-around">
