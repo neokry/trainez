@@ -14,6 +14,7 @@ export default function useMyStripe() {
                 const updateData = {
                     accountId: data.accId,
                     customerId: data.cusId,
+                    applicationFee: 10,
                 };
                 await stripeInfo.updateStripeInfo(userId, updateData);
                 return data;
@@ -141,6 +142,7 @@ export default function useMyStripe() {
         const subscriptionReq = {
             priceId: creatorInfo.priceId,
             accountId: creatorInfo.accountId,
+            applicationFee: creatorInfo.applicationFee,
             customerId: subscriberInfo.customerId,
             creatorId: creatorId,
             subscriberId: subscriberId,

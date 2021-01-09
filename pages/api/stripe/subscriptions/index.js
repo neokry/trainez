@@ -19,7 +19,7 @@ export default async function Create(req, res) {
                     transfer_data: {
                         destination: subscriptionReq.accountId,
                     },
-                    application_fee_percent: 10,
+                    application_fee_percent: subscriptionReq.applicationFee,
                     metadata: {
                         creatorId: subscriptionReq.creatorId,
                         subscriberId: subscriptionReq.subscriberId,
