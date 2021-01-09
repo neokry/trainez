@@ -241,12 +241,12 @@ export default function LandingPage() {
                             <img
                                 src="/workout1.jpg"
                                 alt=""
-                                className="object-cover mb-6 rounded shadow-lg h-28 sm:h-48 xl:h-56 w-28 sm:w-48 xl:w-56"
+                                className="object-cover mb-6 rounded shadow-lg h-28 sm:h-48 xl:h-56 w-32 sm:w-48 xl:w-56"
                             />
                             <img
                                 src="/workout2.jpg"
                                 alt=""
-                                className="object-cover w-20 h-20 rounded shadow-lg sm:h-32 xl:h-40 sm:w-32 xl:w-40"
+                                className="object-cover w-24 h-24 rounded shadow-lg sm:h-32 xl:h-40 sm:w-32 xl:w-40"
                             />
                         </div>
                         <div className="px-3">
