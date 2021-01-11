@@ -8,10 +8,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
+import useStreamNotifications from "../hooks/useStreamNotifications";
 
 export function UserActivity({ props }) {
     const [showComments, setShowComments] = useState(false);
+    const notification = useStreamNotifications();
     const router = useRouter();
+
+    console.log("props", props);
 
     const onClickUser = (user) => {
         const userName = user.data.userName;
@@ -21,6 +25,11 @@ export function UserActivity({ props }) {
     const onCommentClick = (e) => {
         e.preventDefault();
         setShowComments(!showComments);
+    };
+
+    const onReaction = async (reaction) => {
+        const res = await notification.likeNotification(reaction.activity);
+        console.log("added activity", res);
     };
 
     return (
