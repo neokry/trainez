@@ -20,5 +20,19 @@ export default function FireRepository() {
         });
     };
 
-    return { usersLastOnline };
+    const topicPosts = async (
+        userId: string,
+        topicId: string
+    ): Promise<string[]> => {
+        const res = await projectFirestore
+            .collection("topics")
+            .doc(topicId)
+            .collection("posts")
+            .doc(userId)
+            .get();
+
+        return res.data()?.posts;
+    };
+
+    return { usersLastOnline, topicPosts };
 }

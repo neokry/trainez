@@ -1,5 +1,7 @@
-import { connect, StreamUser } from "getstream";
+import { Activity, connect, StreamUser } from "getstream";
 import UserDetailsEntity from "./entities/UserDetailsEntity";
+import jwt from "jsonwebtoken";
+import axios, { AxiosRequestConfig } from "axios";
 
 const client = connect(
     process.env.NEXT_PUBLIC_STREAM_KEY,
@@ -28,5 +30,30 @@ export default function StreamRepository() {
         });
     };
 
-    return { userDetails };
+    const activites = async (activityIds: string[]): Promise<Activity[]> => {
+        const scope = {
+            resource: "activities",
+            action: "read",
+            feed_id: "*",
+        };
+
+        const token = jwt.sign(scope, process.env.STREAM_SECRET);
+
+        const config: AxiosRequestConfig = {
+            headers: { "Stream-Auth-Type": jwt, Authorization: token },
+            params: {
+                api_key: process.env.NEXT_PUBLIC_STREAM_KEY,
+                ids: activityIds.join(","),
+            },
+        };
+
+        const res = await axios.get(
+            "https://us-east-api.stream-io-api.com/api/v1.0/enrich/activities/",
+            config
+        );
+
+        return res.data?.results;
+    };
+
+    return { userDetails, activites };
 }

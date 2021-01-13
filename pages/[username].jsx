@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import useMyStripe from "../hooks/useMyStripe";
 import Spinner from "../components/spinner";
 import { mutate } from "swr";
+import TopicList from "../components/topicList";
 
 export default function User() {
     const router = useRouter();
@@ -39,6 +40,7 @@ export default function User() {
     const [showLinkNotification, setShowLinkNotification] = useState(false);
     const [hasPaymentMethods, setHasPaymentMethods] = useState(false);
     const [subPrice, setSubPrice] = useState(false);
+    const [currentTab, setCurrentTab] = useState("all");
 
     const { username, payment } = router.query;
 
@@ -134,9 +136,26 @@ export default function User() {
                         subscribeClick={subscribeClick}
                         isFollowing={isFollowing}
                     />
-                    <div className="border-t-2 mt-10">
+                    <div className="mt-4">
                         {isFollowing || isCurrentUser ? (
-                            <UserFeed userId={user.id}></UserFeed>
+                            <>
+                                <FeedTabs
+                                    setCurrentTab={setCurrentTab}
+                                    currentTab={currentTab}
+                                />
+                                {(() => {
+                                    switch (currentTab) {
+                                        case "all":
+                                            return (
+                                                <UserFeed userId={user.id} />
+                                            );
+                                        case "topic":
+                                            return (
+                                                <TopicList userId={user.id} />
+                                            );
+                                    }
+                                })()}
+                            </>
                         ) : (
                             <LockedUserFeed subscribeClick={subscribeClick} />
                         )}
@@ -144,6 +163,44 @@ export default function User() {
                 </div>
             </Layout>
         </>
+    );
+}
+
+function FeedTabs({ setCurrentTab, currentTab }) {
+    const selectedStyle =
+        "bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-dark font-semibold focus:outline-none";
+    const unselectedStyle =
+        "bg-white inline-block py-2 px-4 text-blue hover:text-blue-darker font-semibold focus:outline-none";
+
+    return (
+        <div className="mt-10">
+            <ul class="list-reset flex border-b">
+                <li className={currentTab === "all" ? "-mb-px mr-1" : "mr-1"}>
+                    <button
+                        onClick={() => setCurrentTab("all")}
+                        className={
+                            currentTab === "all"
+                                ? selectedStyle
+                                : unselectedStyle
+                        }
+                    >
+                        All Posts
+                    </button>
+                </li>
+                <li className={currentTab === "topic" ? "-mb-px mr-1" : "mr-1"}>
+                    <button
+                        onClick={() => setCurrentTab("topic")}
+                        className={
+                            currentTab === "topic"
+                                ? selectedStyle
+                                : unselectedStyle
+                        }
+                    >
+                        Topics
+                    </button>
+                </li>
+            </ul>
+        </div>
     );
 }
 
