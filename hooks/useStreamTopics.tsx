@@ -3,7 +3,7 @@ import firebase from "firebase";
 import { useEffect, useState } from "react";
 
 export default function useStreamTopics(userId) {
-    const [topicList, setTopicList] = useState([]);
+    const [topicList, setTopicList] = useState(null);
 
     useEffect(() => {
         if (userId) getTopics();
@@ -55,6 +55,8 @@ export default function useStreamTopics(userId) {
             .get();
         if (res.data()?.topics) {
             setTopicList(res.data()?.topics);
+        } else {
+            setTopicList([])
         }
     };
 

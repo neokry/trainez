@@ -1,12 +1,18 @@
 import useStreamTopics from "../hooks/useStreamTopics";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 export default function TopicList({ userId }) {
     const { topicList } = useStreamTopics(userId);
 
     console.log("topics", topicList);
 
-    if (!topicList || topicList.length === 0) {
+    if (!topicList) {
+        return null;
+    }
+
+    if (topicList?.length === 0) {
         return (
             <div className="w-full flex justify-around text-gray-500 mt-5 text-xl font-semibold">
                 <p>Nothing was found</p>
@@ -15,18 +21,22 @@ export default function TopicList({ userId }) {
     }
 
     return (
-        <div className="mt-5 w-full md:flex md:flex-wrap">
+        <div className="w-full md:flex md:flex-wrap">
             {topicList.map((topic, idx) => {
                 return (
                     <Link
                         key={idx}
                         href={`/topic/${topic.value}?uid=${userId}`}
                     >
-                        <button className="w-full md:w-1/2 mt-8 md:mt-6 px-2 outline-none focus:outline-none flex">
-                            <div className="bg-white w-full rounded-md p-5 flex justify-around shadow-md border border-gray-200">
-                                <p className="font-bold text-lg text-gray-800">
+                        <button className="w-full outline-none focus:outline-none flex">
+                            <div className="bg-white w-full rounded-md p-8 flex justify-between border-b border-gray-200">
+                                <p className="font-light text-lg text-gray-900">
                                     {topic.label}
                                 </p>
+                                <FontAwesomeIcon
+                                    className="text-gray-400 text-lg"
+                                    icon={faChevronRight}
+                                />
                             </div>
                         </button>
                     </Link>

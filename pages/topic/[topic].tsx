@@ -33,7 +33,7 @@ export default function Topic() {
 
     //Get topic name
     useEffect(() => {
-        if (topicList.length === 0) return;
+        if (!topicList) return;
         const selected = topicList.find((x) => x.value === topic);
         setTopicName(selected.label);
     }, [topicList]);
