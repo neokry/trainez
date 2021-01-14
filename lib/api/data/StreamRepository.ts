@@ -1,9 +1,15 @@
-import { Activity, connect, StreamUser } from "getstream";
+import {
+    Activity,
+    connect,
+    NewActivity,
+    StreamClient,
+    StreamUser,
+} from "getstream";
 import UserDetailsEntity from "./entities/UserDetailsEntity";
 import jwt from "jsonwebtoken";
 import axios, { AxiosRequestConfig } from "axios";
 
-const client = connect(
+const client: StreamClient = connect(
     process.env.NEXT_PUBLIC_STREAM_KEY,
     process.env.STREAM_SECRET,
     process.env.NEXT_PUBLIC_STREAM_APP_ID
@@ -55,5 +61,29 @@ export default function StreamRepository() {
         return res.data?.results;
     };
 
-    return { userDetails, activites };
+    const notify = async (
+        actorId: string,
+        object: string,
+        verb: string,
+        feedId: string
+    ) => {
+        const feed = client.feed("notification", feedId);
+        const activity: NewActivity = {
+            actor: actorId,
+            verb: verb,
+            object: object,
+        };
+        const result = await feed.addActivity(activity);
+        console.log("notify res", result);
+        return result;
+    };
+
+    const follow = async (currentUserId: string, followingUserId: string) => {
+        const feed = client.feed("timeline", currentUserId);
+        const result = await feed.follow("user", followingUserId);
+        console.log("follow res", result);
+        return result;
+    };
+
+    return { userDetails, activites, notify, follow };
 }

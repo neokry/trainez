@@ -19,13 +19,13 @@ function Header({ menuClick, user }) {
                     </a>
                 </Link>
 
-                {/*user && (
+                {user && (
                     <Link href="/my/notifications">
                         <a className="block text-black">
                             <FontAwesomeIcon icon={faBell} />
                         </a>
                     </Link>
-                )*/}
+                )}
 
                 {user && (
                     <Link href="/posts/create">
@@ -35,13 +35,13 @@ function Header({ menuClick, user }) {
                     </Link>
                 )}
 
-                {/*user && (
+                {user && (
                     <Link href="/my/chats">
                         <a className="block text-black">
                             <FontAwesomeIcon icon={faCommentDots} />
                         </a>
                     </Link>
-                )*/}
+                )}
 
                 <button className="block text-black" onClick={menuClick}>
                     <FontAwesomeIcon icon={faUserCircle} />
