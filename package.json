@@ -36,6 +36,7 @@
         "firebase-admin": "^9.4.2",
         "framer-motion": "^2.9.5",
         "getstream": "^7.1.0",
+        "jsonwebtoken": "^8.5.1",
         "micro": "^9.3.4",
         "next": "10.0.3",
         "next-seo": "^4.17.0",
@@ -46,6 +47,7 @@
         "react-dom": "17.0.1",
         "react-hook-form": "^6.12.2",
         "react-player": "^2.7.2",
+        "react-select": "^3.1.1",
         "stripe": "^8.129.0",
         "swr": "^0.3.9",
         "vercel": "^21.0.1"

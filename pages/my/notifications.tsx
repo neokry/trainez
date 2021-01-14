@@ -22,15 +22,19 @@ export default function notifications() {
                 <Stream>
                     <NotificationFeed
                         feedGroup="notification"
-                        Group={(props) => (
-                            <Notification
-                                {...props}
-                                onClickUser={(user) => console.log(user)}
-                                onClickNotification={(notification) =>
-                                    console.log(notification)
-                                }
-                            />
-                        )}
+                        Group={(props) => {
+                            console.log("props", props);
+                            return (
+                                <Notification
+                                    {...props}
+                                    options={{ enrich: true }}
+                                    onClickUser={(user) => console.log(user)}
+                                    onClickNotification={(notification) =>
+                                        console.log(notification)
+                                    }
+                                />
+                            );
+                        }}
                     />
                 </Stream>
             </div>

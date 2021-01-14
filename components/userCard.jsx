@@ -39,7 +39,7 @@ export default function UserCard({ user, onConfirm }) {
 
     return (
         <div className="border border-gray-300 rounded-md p-5">
-            <Link href={`/${user.userName}`}>
+            <Link href={`/${user.userData.userName}`}>
                 <div className="flex items-center cursor-pointer">
                     <div className="mr-2">
                         <ProfilePicture
