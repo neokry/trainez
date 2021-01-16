@@ -12,6 +12,7 @@ export default function Subscribers() {
     const req = useRequireAuth();
     const [hasMore, setHasMore] = useState(false);
     const auth = useAuth();
+    const pageLimit = 9;
     const { data: followStats } = useSWR(
         auth.user?.uid ? `/api/stream/${auth.user.uid}/followStats` : null,
         {
@@ -26,7 +27,7 @@ export default function Subscribers() {
     }
 
     useEffect(() => {
-        const maxLoaded = (pageCount + 1) * 10;
+        const maxLoaded = (pageCount + 1) * pageLimit;
         const followers = followStats?.followers ?? 0;
         const diff = followers - maxLoaded;
         setHasMore(diff > 0);
@@ -81,7 +82,7 @@ function Page({ index }) {
         <div className="mt-5 w-full md:flex md:flex-wrap">
             {users?.map((user, idx) => {
                 return (
-                    <div className="md:w-1/2 mt-2 px-2" key={idx}>
+                    <div className="md:w-1/3 mt-2 px-2" key={idx}>
                         <UserCard user={user} />
                     </div>
                 );

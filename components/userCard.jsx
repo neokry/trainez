@@ -64,28 +64,28 @@ export default function UserCard({ user, onConfirm }) {
                 </div>
             </Link>
             {onConfirm && (
-                <div className="mt-5 flex items-center justify-around">
+                <div className="mt-10 flex items-center justify-around">
                     {user.status === "active" || user.status === null ? (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 onConfirm(user);
                             }}
-                            className="border border-green-500 text-green-500 px-5 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none"
+                            className="border border-green-500 text-green-500 w-full py-3 rounded-full text-sm font-semibold outline-none focus:outline-none"
                         >
                             Subscribed For {user.price ?? "FREE"}{" "}
                             {user.price && "$ (PER MONTH)"}
                         </button>
                     ) : (
-                        <div className="border border-gray-500 text-gray-500 px-5 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none">
+                        <div className="border border-gray-500 text-gray-500 w-full py-3 rounded-full text-sm font-semibold outline-none focus:outline-none">
                             <p>UNSUBSCRIBED</p>
                         </div>
                     )}
                 </div>
             )}
-            <div className="mt-5 flex items-center justify-around">
+            <div className="mt-2 flex items-center justify-around">
                 <Link href={`/my/chats/chat/${user.id}`}>
-                    <button className="border border-green-500 text-green-500 px-10 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none">
+                    <button className="border border-green-500 text-green-500 w-full py-3 rounded-full text-sm font-semibold outline-none focus:outline-none">
                         Send Message
                     </button>
                 </Link>

@@ -7,6 +7,7 @@ const fetcher = (url, query) => axios.post(url, query).then((res) => res.data);
 export default function useStreamUserDetails({ type, page }) {
     const [query, setQuery] = useState(false);
     const stream = useStream();
+    const pageLimit = 9;
 
     const { data, error } = useSWR(
         query ? [`/api/stream/users/detailsFull`, query] : null,
@@ -20,10 +21,10 @@ export default function useStreamUserDetails({ type, page }) {
 
     const getQuery = async () => {
         if (type === "following") {
-            const newQuery = await stream.getFollowing(10, page);
+            const newQuery = await stream.getFollowing(pageLimit, page);
             setQuery(newQuery);
         } else if (type === "followers") {
-            const newQuery = await stream.getFollowers(10, page);
+            const newQuery = await stream.getFollowers(pageLimit, page);
             setQuery(newQuery);
         }
     };

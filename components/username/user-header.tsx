@@ -31,7 +31,7 @@ export const UserHeader = ({
                 <ProfilePicture
                     displayName={user.name}
                     profileImg={user.profileImage}
-                    isSmall={false}
+                    size={"lg"}
                     isEditable={false}
                 />
                 <div>

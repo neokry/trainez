@@ -14,7 +14,7 @@ export const SubscribeDetails = ({ user, isSignup }) => {
                 <ProfilePicture
                     displayName={user.name}
                     profileImg={user.profileImage}
-                    isSmall={false}
+                    size={"lg"}
                     isEditable={false}
                 />
             </div>

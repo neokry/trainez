@@ -15,7 +15,7 @@ export default function SubscriptionSkeleton() {
 
 function UserSkeleton() {
     return (
-        <div className="md:w-1/2 mt-2 px-2">
+        <div className="md:w-1/3 mt-2 px-2">
             <div className="border border-gray-300 rounded-md p-5 flex items-center">
                 <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse"></div>
                 <div className="w-3/4 mt-4">
