@@ -83,6 +83,13 @@ export default function UserCard({ user, onConfirm }) {
                     )}
                 </div>
             )}
+            <div className="mt-5 flex items-center justify-around">
+                <Link href={`/my/chats/chat/${user.id}`}>
+                    <button className="border border-green-500 text-green-500 px-10 py-2 rounded-full text-sm font-semibold outline-none focus:outline-none">
+                        Send Message
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 }

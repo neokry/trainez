@@ -3,6 +3,7 @@ import UserService from "../../../../lib/api/services/UserService";
 
 interface UsersRequest {
     userIds: string[];
+    customerId: string;
 }
 
 interface ValidationReponse {
@@ -15,16 +16,17 @@ export default async function Handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    console.log("Called user details");
     const { success, response, requestData } = validate(req, res);
     if (!success) {
         res = response;
         return;
     }
-    const { getUserDetails } = UserService();
+    const { getUserDetailsFull } = UserService();
 
-    const details = await getUserDetails(requestData.userIds);
-    console.log("Got details", details);
+    const details = await getUserDetailsFull(
+        requestData.userIds,
+        requestData.customerId
+    );
 
     res.status(200);
     res.setHeader("Content-Type", "application/json");

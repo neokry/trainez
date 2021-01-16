@@ -3,13 +3,14 @@ import UserDetail from "../models/UserDetail";
 import FireRepository from "../data/FireRepository";
 import StripeRepository from "../data/StripeRepository";
 import StreamRepository from "../data/StreamRepository";
+import UserDetailsEntity from "../data/entities/UserDetailsEntity";
 
 export default function UserService() {
     const { usersLastOnline } = FireRepository();
     const { listUserSubscriptions } = StripeRepository();
     const { userDetails } = StreamRepository();
 
-    const getUserDetails = async (
+    const getUserDetailsFull = async (
         userIds: string[],
         customerId: string
     ): Promise<UserDetail[]> => {
@@ -42,5 +43,12 @@ export default function UserService() {
         });
     };
 
-    return { getUserDetails };
+    const getUserDetails = async (
+        userIds: string[]
+    ): Promise<UserDetailsEntity[]> => {
+        const details = await userDetails(userIds);
+        return details;
+    };
+
+    return { getUserDetailsFull, getUserDetails };
 }

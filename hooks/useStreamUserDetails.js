@@ -9,7 +9,7 @@ export default function useStreamUserDetails({ type, page }) {
     const stream = useStream();
 
     const { data, error } = useSWR(
-        query ? [`/api/stream/users/details`, query] : null,
+        query ? [`/api/stream/users/detailsFull`, query] : null,
         fetcher,
         { refreshInterval: 0 }
     );
@@ -31,7 +31,7 @@ export default function useStreamUserDetails({ type, page }) {
     const updateUsers = async (userId) => {
         await getQuery();
         mutate(
-            [`/api/stream/users/details`, query],
+            [`/api/stream/users/detailsFull`, query],
             async (users) => {
                 return users.filter((user) => user.id !== userId);
             },
